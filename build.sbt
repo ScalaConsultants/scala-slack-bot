@@ -6,11 +6,13 @@ scalaVersion := "2.11.5"
 
 organization := "io.scalac"
 
+val akkaVersion = "2.3.8"
+
 libraryDependencies ++= Seq(
   "org.mockito" % "mockito-core" % "1.10.19",
-  "com.typesafe.akka" %% "akka-actor" % "2.3.8",
-  "com.typesafe.akka" %% "akka-slf4j" % "2.3.8",
-  "com.typesafe.akka" %% "akka-testkit" % "2.3.8" % "test",
+  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
   "org.json4s" %% "json4s-native" % "3.2.11",
   "org.scalaj" %% "scalaj-http" % "1.1.0",
   "joda-time" % "joda-time" % "2.7",

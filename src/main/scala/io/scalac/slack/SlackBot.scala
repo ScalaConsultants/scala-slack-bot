@@ -1,6 +1,8 @@
 package io.scalac.slack
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, Props}
+import io.scalac.slack.actors.BotActor
+import io.scalac.slack.actors.messages.Start
 
 /**
  * Created on 20.01.15 21:51
@@ -15,11 +17,12 @@ object SlackBot extends Logger {
     val system = ActorSystem("SlackBotSystem")
     try {
 
+      system.actorOf(Props[BotActor]) ! Start
 
       system.awaitTermination()
       logger.info("Shutdown successful...")
 
-    }catch {
+    } catch {
       case e: Exception =>
         logger.error("An unhandled exception occured...", e)
         system.shutdown()
