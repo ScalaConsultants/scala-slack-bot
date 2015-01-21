@@ -1,13 +1,10 @@
 package io.scalac.slack.actors
 
-import akka.actor.{Actor, ActorLogging}
-import io.scalac.slack.WebClient
-import io.scalac.slack.actors.messages.{Start, Stop}
-import io.scalac.slack.api.methods.Api
+import akka.actor.{Actor, ActorLogging, Props}
+import io.scalac.slack.actors.messages.{ApiTest, Start, Stop}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.util.{Failure, Success}
 
 /**
  * Created on 20.01.15 23:59
@@ -18,16 +15,11 @@ class BotActor extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case Start =>
-      log.debug("System online")
 
-      val webClient = new WebClient()
+      val api = context.actorOf(Props[ApiActor])
 
-      val futureResponse = webClient.request(Api.test(None, Some("gleba")))
+      api ! ApiTest()
 
-      futureResponse onComplete {
-        case Success(response) => println(response)
-        case Failure(error) => println("An error has occured: " + error.getMessage)
-      }
 
       system.scheduler.scheduleOnce(10 seconds, self, Stop)
 
