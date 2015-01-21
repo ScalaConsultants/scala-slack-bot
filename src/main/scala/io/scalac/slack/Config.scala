@@ -10,5 +10,7 @@ object Config {
 
   private val config = ConfigFactory.load()
 
-  def apiKey :APIKey = APIKey(config.getString("api.key"))
+  def apiKey: APIKey = APIKey(config.getString("api.key"))
+
+  def baseUrl(endpoint: String) = config.getString("api.base.url") + endpoint
 }
