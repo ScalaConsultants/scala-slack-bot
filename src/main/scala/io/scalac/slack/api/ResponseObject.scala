@@ -7,8 +7,6 @@ import spray.json.DefaultJsonProtocol
  */
 sealed trait ResponseObject
 
-object OK extends ResponseObject
-
 case class ApiTestResponse(ok: Boolean, error: Option[String], args: Option[Map[String, String]]) extends ResponseObject
 
 

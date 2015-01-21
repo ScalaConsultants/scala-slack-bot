@@ -13,4 +13,4 @@ object Stop extends Message
 
 case class ApiTest(param: Option[String] = None, error: Option[String] = None)
 
-case class Ok(param: Option[String])
+case class Ok(args: Map[String, String])

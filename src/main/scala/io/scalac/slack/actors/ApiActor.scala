@@ -1,20 +1,20 @@
 package io.scalac.slack.actors
 
-import io.scalac.slack.actors.messages.ApiTest
-import io.scalac.slack.api.{OK, ApiTestResponse, Unmarshallers}
+import io.scalac.slack.actors.messages.{ApiTest, Ok}
+import io.scalac.slack.api.{ApiTestResponse, Unmarshallers}
 import spray.http.Uri
 import spray.httpx.RequestBuilding._
 import spray.json._
 
-import scala.util.{Success, Failure}
+import scala.util.{Failure, Success}
 
 /**
  * Created on 21.01.15 20:32
  */
 class ApiActor extends ClientActor {
+
   import context.dispatcher
-  import DefaultJsonProtocol._
-  import Unmarshallers._
+  import io.scalac.slack.api.Unmarshallers._
 
   override def receive: Receive = {
     case at: ApiTest =>
@@ -27,8 +27,8 @@ class ApiActor extends ClientActor {
       futureResponse onComplete {
         case Success(response) => println(response)
           val res = response.parseJson.convertTo[ApiTestResponse]
-          if(res.ok)
-            sender ! OK
+          if (res.ok)
+            sender ! Ok(res.args.getOrElse(Map.empty[String, String]))
           else
             sender ! new UnknownError("ApiTestError")
 
