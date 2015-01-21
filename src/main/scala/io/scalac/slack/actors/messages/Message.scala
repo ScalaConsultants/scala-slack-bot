@@ -6,3 +6,4 @@ package io.scalac.slack.actors.messages
 sealed trait Message
 object Start extends Message //starts the system
 object Stop extends Message //message for shutdown system
+object Authorize extends Message //request for auth token
