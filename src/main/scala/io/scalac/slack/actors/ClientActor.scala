@@ -1,7 +1,7 @@
 package io.scalac.slack.actors
 
 import akka.actor.{Actor, ActorLogging}
-import io.scalac.slack.Config
+import io.scalac.slack.{Config, Requester}
 import spray.client.pipelining._
 import spray.http.{HttpRequest, HttpResponse}
 
@@ -10,7 +10,7 @@ import scala.concurrent.Future
 /**
  * Created on 21.01.15 20:26
  */
-trait ClientActor extends Actor with ActorLogging {
+trait ClientActor extends Actor with Requester with ActorLogging {
 
   import context.dispatcher
 

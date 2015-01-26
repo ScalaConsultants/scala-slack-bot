@@ -1,7 +1,9 @@
 package io.scalac.slack.actors
 
 import akka.actor.{Actor, ActorLogging, Props}
-import io.scalac.slack.actors.messages.{ApiTest, Start, Stop}
+import io.scalac.slack.Config
+import io.scalac.slack.actors.messages.{AuthTest, ApiTest, Start, Stop}
+import io.scalac.slack.exceptions.{NotAuthenticated, SlackError}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -18,12 +20,17 @@ class BotActor extends Actor with ActorLogging {
 
       val api = context.actorOf(Props[ApiActor])
 
-      api ! ApiTest()
+//      api ! ApiTest()
 
+      api ! AuthTest(Config.apiKey)
 
-      system.scheduler.scheduleOnce(10 seconds, self, Stop)
+//      system.scheduler.scheduleOnce(10 seconds, self, Stop)
 
     case Stop => system.shutdown()
+    case ne : NotAuthenticated =>
+      log.debug("Not authenticated")
+    case se : SlackError =>
+      log.error(se, "Error occured")
   }
 
 }

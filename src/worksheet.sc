@@ -1,7 +1,10 @@
-val name = Some("upase")
-val error = None
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 
-//oO.getOrElse("")
-//pO.getOrElse("alsd")
+val fut: Future[String] = Future.successful("bolo")
 
-val m = Map("name" -> name, "error" -> error).collect {case (key, Some(value)) => key -> value}
+
+
+
