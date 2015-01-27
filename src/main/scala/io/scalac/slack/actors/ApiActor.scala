@@ -2,7 +2,7 @@ package io.scalac.slack.actors
 
 import io.scalac.slack.actors.messages.{ApiTest, AuthTest, Ok}
 import io.scalac.slack.api.{ApiTestResponse, AuthTestResponse}
-import io.scalac.slack.exceptions.SlackError
+import io.scalac.slack.exceptions.{ApiTestError, SlackError}
 import spray.http.Uri
 import spray.httpx.RequestBuilding._
 import spray.json._
@@ -32,7 +32,7 @@ class ApiActor extends ClientActor {
             send ! Ok(res.args)
           else
 
-            send ! new UnknownError("ApiTestError")
+            send ! ApiTestError
 
       }
 

@@ -26,10 +26,10 @@ class BotActor extends Actor with ActorLogging {
     //      system.scheduler.scheduleOnce(10 seconds, self, Stop)
 
     case Stop => system.shutdown()
-    case ne: NotAuthenticated =>
+    case NotAuthenticated =>
       log.debug("Not authenticated")
-    case se: SlackError =>
-      log.error(se, "Error occured")
+    case SlackError =>
+      log.error("SlackError occured")
     case Ok(args) =>
       println("GOT OK")
   }
