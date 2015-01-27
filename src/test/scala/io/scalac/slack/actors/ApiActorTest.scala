@@ -20,8 +20,8 @@ class ApiActorTest extends TestKit(ActorSystem("ApiActorSystem")) with ImplicitS
       "response OK " in {
         val api = TestActorRef[ApiActor]
 
-        api ! ApiTest
-        expectMsg(Ok)
+        api ! ApiTest(None, None)
+        expectMsg(Ok(None))
 
       }
     }

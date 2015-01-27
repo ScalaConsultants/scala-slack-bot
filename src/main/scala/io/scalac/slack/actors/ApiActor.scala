@@ -1,7 +1,7 @@
 package io.scalac.slack.actors
 
-import io.scalac.slack.actors.messages.{AuthTest, ApiTest, Ok}
-import io.scalac.slack.api.{AuthTestResponse, ApiTestResponse, Unmarshallers}
+import io.scalac.slack.actors.messages.{ApiTest, AuthTest, Ok}
+import io.scalac.slack.api.{ApiTestResponse, AuthTestResponse}
 import io.scalac.slack.exceptions.SlackError
 import spray.http.Uri
 import spray.httpx.RequestBuilding._
@@ -18,26 +18,24 @@ class ApiActor extends ClientActor {
   import io.scalac.slack.api.Unmarshallers._
 
   override def receive: Receive = {
-    case at: ApiTest =>
+    case ApiTest(param, error) =>
       log.debug("api.test requested")
-      val params = Map("param" -> at.param, "error" -> at.error).collect { case (key, Some(value)) => key -> value}
+      val params = Map("param" -> param, "error" -> error).collect { case (key, Some(value)) => key -> value}
       val uri = Uri(url("api.test")).withQuery(params)
 
       val futureResponse = request(Get(uri))
-
-      futureResponse onComplete {
-        case Success(response) => println(response)
-          val res = response.parseJson.convertTo[ApiTestResponse]
+        val send = sender()
+      futureResponse onSuccess {
+        case result =>
+          val res = result.parseJson.convertTo[ApiTestResponse]
           if (res.ok)
-            sender ! Ok(res.args.getOrElse(Map.empty[String, String]))
+            send ! Ok(res.args)
           else
 
-            sender ! new UnknownError("ApiTestError")
+            send ! new UnknownError("ApiTestError")
 
-        case Failure(err) =>
-          log.error(err, "api.test error")
-          println("An error has occured: " + err.getMessage)
       }
+
     case AuthTest(token) =>
       log.debug("auth.test requested")
       val uri = Uri(url("auth.test")).withQuery("token" -> token.key + "ld")
@@ -48,7 +46,7 @@ class ApiActor extends ClientActor {
         case Success(response) =>
           log.debug(response)
           val res = response.parseJson.convertTo[AuthTestResponse]
-          if(res.ok)
+          if (res.ok)
             sender ! res
           else
             sender ! SlackError(res.error.get)
@@ -56,6 +54,9 @@ class ApiActor extends ClientActor {
         case Failure(err) =>
           log.error(err, "auth.test error")
           sender ! SlackError("AuthTestError")
-    }
+      }
+    case theRest =>
+      println("DUPA ZIMNA: " + theRest)
+
   }
 }

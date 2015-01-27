@@ -88,17 +88,4 @@ class MockRequesterTest extends FunSuite with Matchers with ScalaFutures with Mo
     }
   }
 
-  test("for compehension with futures"){
-
-    val f: Future[Option[String]] = Future.successful(Some("testData"))
-
-    f onComplete{
-      case Success(result) =>
-
-    }
-
-  }
-
-
-
 }
