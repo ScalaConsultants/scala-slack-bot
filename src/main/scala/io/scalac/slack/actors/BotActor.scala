@@ -3,7 +3,7 @@ package io.scalac.slack.actors
 import akka.actor.{Actor, ActorLogging, Props}
 import io.scalac.slack.Config
 import io.scalac.slack.actors.messages._
-import io.scalac.slack.exceptions.{NotAuthenticated, SlackError}
+import io.scalac.slack.errors.{NotAuthenticated, SlackError}
 
 import scala.language.postfixOps
 

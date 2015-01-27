@@ -1,4 +1,4 @@
-package io.scalac.slack.exceptions
+package io.scalac.slack.errors
 
 /**
  * Created on 21.01.15 16:23
@@ -7,15 +7,15 @@ sealed trait SlackError
 
 object ApiTestError extends SlackError
 
+//no authentication token provided
 object NotAuthenticated extends SlackError
 
-//no authentication token provided
+//invalid auth token
 object InvalidAuth extends SlackError
 
-//invalid auth token
+//token is for deleted user or team
 object AccountInactive extends SlackError
 
-//token is for deleted user or team
 case class UnknownError(msg: String) extends SlackError
 
 
