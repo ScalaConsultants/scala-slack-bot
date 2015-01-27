@@ -1,10 +1,10 @@
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.util.{Failure, Success}
+val empty = ""
+val notEmpty = "full"
 
-val fut: Future[String] = Future.successful("bolo")
+implicit def stringToOption(s: String): Option[String] = if (s.isEmpty) None else Some(s)
 
-
-
+val opt1: Option[String] = empty
+//opt1: Option[String] = None
+val opt2: Option[String] = notEmpty
+//opt2: Option[String] = Some(full)
 

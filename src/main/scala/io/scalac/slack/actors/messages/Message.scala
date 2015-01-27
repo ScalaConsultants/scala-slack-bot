@@ -17,6 +17,7 @@ case class ApiTest(param: Option[String] = None, error: Option[String] = None) e
 
 case class AuthTest(token: APIKey) extends Message
 
+case class RtmStart(token: APIKey) extends Message
 
 //API RESPONSES
 case class Ok(args: Option[Map[String, String]]) extends Message
@@ -25,5 +26,4 @@ case class AuthData(url: String, team: String, user: String, teamId: String, use
 
 object AuthData {
   def apply(atr: AuthData) = atr
-
 }

@@ -1,6 +1,6 @@
 package io.scalac.slack.actors
 
-import io.scalac.slack.actors.messages.{ApiTest, AuthData, AuthTest, Ok}
+import io.scalac.slack.actors.messages._
 import io.scalac.slack.api.ResponseObject._
 import io.scalac.slack.api.{ApiTestResponse, AuthTestResponse}
 import io.scalac.slack.errors.{ApiTestError, SlackError}
@@ -24,30 +24,43 @@ class ApiActor extends ClientActor {
 
       val futureResponse = request(Get(uri))
 
+      val send = sender()
       futureResponse onSuccess {
         case result =>
           val res = result.parseJson.convertTo[ApiTestResponse]
           if (res.ok)
-            sender ! Ok(res.args)
+            send ! Ok(res.args)
           else
-            sender ! ApiTestError
+            send ! ApiTestError
 
       }
 
     case AuthTest(token) =>
       log.debug("auth.test requested")
-      val uri = Uri(url("auth.test")).withQuery("token" -> token.key + "ld")
+      val uri = Uri(url("auth.test")).withQuery("token" -> token.key)
 
       val futureResponse = request(Get(uri))
+      val send = sender()
+      futureResponse onSuccess {
+        case response =>
+          val res = response.parseJson.convertTo[AuthTestResponse]
+          if (res.ok)
+            send ! AuthData(res)
+          else
+            send ! SlackError(res.error.get)
+      }
+    case RtmStart(token) =>
+      log.debug("rtm.start requested")
+      val uri = Uri(url("rtm.start")).withQuery("token" -> token.key)
+      val futureResponse = request(Get(uri))
+
+      val send = sender()
 
       futureResponse onSuccess {
         case response =>
           log.debug(response)
-          val res = response.parseJson.convertTo[AuthTestResponse]
-          if (res.ok)
-            sender ! AuthData(res)
-          else
-            sender ! SlackError(res.error.get)
+        //          val res = response.parseJson.convertTo[RtmStartResponse]
+
       }
   }
 }

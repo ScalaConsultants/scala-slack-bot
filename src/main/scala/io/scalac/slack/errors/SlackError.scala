@@ -16,6 +16,9 @@ object InvalidAuth extends SlackError
 //token is for deleted user or team
 object AccountInactive extends SlackError
 
+//team is being migrated between servers
+object MigrationInProgress extends SlackError
+
 case class UnknownError(msg: String) extends SlackError
 
 
@@ -25,6 +28,7 @@ object SlackError {
       case "not_authed" => NotAuthenticated
       case "invalid_auth" => InvalidAuth
       case "account_inactive" => AccountInactive
+      case "migration_in_progress" => MigrationInProgress
       case err => new UnknownError(err)
     }
   }
