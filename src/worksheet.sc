@@ -1,3 +1,5 @@
+import org.joda.time.DateTime
+
 val empty = ""
 val notEmpty = "full"
 
@@ -8,3 +10,4 @@ val opt1: Option[String] = empty
 val opt2: Option[String] = notEmpty
 //opt2: Option[String] = Some(full)
 
+val dt = new DateTime(1421772055000l)

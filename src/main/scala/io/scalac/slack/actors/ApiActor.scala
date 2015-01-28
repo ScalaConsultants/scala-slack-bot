@@ -58,7 +58,7 @@ class ApiActor extends ClientActor {
 
       futureResponse onSuccess {
         case response =>
-          log.debug(response)
+          log.debug(response.parseJson.prettyPrint)
         //          val res = response.parseJson.convertTo[RtmStartResponse]
 
       }

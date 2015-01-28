@@ -1,7 +1,9 @@
 package io.scalac.slack.api
 
 import io.scalac.slack.actors.messages.AuthData
-import spray.json.DefaultJsonProtocol
+import io.scalac.slack.api.models.{SlackUser, ChannelInfo, Channel}
+import org.joda.time.DateTime
+import spray.json._
 
 /**
  * Created on 21.01.15 12:28
@@ -12,10 +14,7 @@ case class ApiTestResponse(ok: Boolean, error: Option[String], args: Option[Map[
 
 case class AuthTestResponse(ok: Boolean, error: Option[String], url: Option[String], team: Option[String], user: Option[String], team_id: Option[String], user_id: Option[String])
 
-object Unmarshallers extends DefaultJsonProtocol {
-  implicit val ApiTestResponseFormat = jsonFormat3(ApiTestResponse)
-  implicit val AuthTestResponseFormat = jsonFormat7(AuthTestResponse)
-}
+case class RtmStartResponse(ok: Boolean, url: String, users: List[SlackUser], channels: List[Channel])
 
 object ResponseObject {
   implicit def authTestResponseToAuthData(atr: AuthTestResponse): AuthData =
