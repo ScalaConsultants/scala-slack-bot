@@ -25,9 +25,11 @@ class ApiActor extends ClientActor {
       val send = sender()
       futureResponse onSuccess {
         case result =>
-          val res = result.parseJson.convertTo[ApiTestResponse]
+//          val res = result.parseJson.convertTo[ApiTestResponse]
+          val res = result.parseJson.convertTo[AuthTestResponse]
+
           if (res.ok)
-            send ! Ok(res.args)
+            send ! Ok(None)
           else
             send ! ApiTestError
 

@@ -5,6 +5,8 @@ package io.scalac.slack
  */
 sealed trait SlackError
 
+
+
 object ApiTestError extends SlackError
 
 //no authentication token provided
@@ -19,7 +21,7 @@ object AccountInactive extends SlackError
 //team is being migrated between servers
 object MigrationInProgress extends SlackError
 
-case class UnknownError(msg: String) extends SlackError
+case class UnspecifiedError(msg: String) extends SlackError
 
 
 object SlackError {
@@ -29,7 +31,7 @@ object SlackError {
       case "invalid_auth" => InvalidAuth
       case "account_inactive" => AccountInactive
       case "migration_in_progress" => MigrationInProgress
-      case err => new UnknownError(err)
+      case err => new UnspecifiedError(err)
     }
   }
 }
