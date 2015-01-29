@@ -1,6 +1,6 @@
 package io.scalac.slack.api
 
-import io.scalac.slack.api.models._
+import io.scalac.slack.models._
 import org.joda.time.DateTime
 import spray.json._
 

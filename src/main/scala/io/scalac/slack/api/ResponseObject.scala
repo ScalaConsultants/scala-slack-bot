@@ -1,6 +1,6 @@
 package io.scalac.slack.api
 
-import io.scalac.slack.api.models.{Channel, SlackUser}
+import io.scalac.slack.models.{Channel, SlackUser}
 
 /**
  * Created on 21.01.15 22:28

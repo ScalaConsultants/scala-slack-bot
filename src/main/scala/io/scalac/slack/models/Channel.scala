@@ -1,4 +1,4 @@
-package io.scalac.slack.api.models
+package io.scalac.slack.models
 
 import org.joda.time.DateTime
 

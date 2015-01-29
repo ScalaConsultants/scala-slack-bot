@@ -1,6 +1,6 @@
 package io.scalac.slack
 
-import io.scalac.slack.api.models.{Away, SlackUser, ChannelInfo, Channel}
+import io.scalac.slack.models.{Away, SlackUser, ChannelInfo, Channel}
 import io.scalac.slack.api.{RtmStartResponse, ApiTestResponse, AuthTestResponse}
 import io.scalac.slack.mock.MockSlackData
 import org.joda.time.DateTime
