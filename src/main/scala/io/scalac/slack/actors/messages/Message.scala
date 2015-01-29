@@ -24,6 +24,8 @@ case class Ok(args: Option[Map[String, String]]) extends Message
 
 case class AuthData(url: String, team: String, user: String, teamId: String, userId: String) extends Message
 
+case class RtmData(url: String)
+
 object AuthData {
   def apply(atr: AuthData) = atr
 }

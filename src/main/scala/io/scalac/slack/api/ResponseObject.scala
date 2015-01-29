@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 import spray.json._
 
 /**
- * Created on 21.01.15 12:28
+ * Created on 21.01.15 22:28
  */
 sealed trait ResponseObject
 

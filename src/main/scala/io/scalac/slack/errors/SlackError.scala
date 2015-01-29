@@ -1,7 +1,7 @@
 package io.scalac.slack.errors
 
 /**
- * Created on 21.01.15 16:23
+ * Created on 21.01.15 01:23
  */
 sealed trait SlackError
 

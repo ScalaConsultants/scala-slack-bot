@@ -7,6 +7,8 @@ import io.scalac.slack.api.APIKey
  * Created on 20.01.15 22:17
  */
 object Config {
+  def websocketKey: String = config.getString("websocket.key")
+
 
   private val config = ConfigFactory.load()
 

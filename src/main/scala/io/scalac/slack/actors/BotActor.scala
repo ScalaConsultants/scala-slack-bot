@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorLogging, Props}
 import io.scalac.slack.Config
 import io.scalac.slack.actors.messages._
 import io.scalac.slack.errors.{MigrationInProgress, SlackError}
+import io.scalac.slack.websockets.{WebSocket, WSActor}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -18,6 +19,8 @@ class BotActor extends Actor with ActorLogging {
   val api = context.actorOf(Props[ApiActor])
 
   var errors = 0
+
+  val websocketClient = context.actorOf(Props[WSActor])
 
   override def receive: Receive = {
     case Start =>
@@ -34,6 +37,15 @@ class BotActor extends Actor with ActorLogging {
       log.info("authenticated successfully")
       log.info("request for websocket connection...")
       api ! RtmStart(Config.apiKey)
+    case RtmData(url) =>
+      log.info("fetched WSS URL")
+      log.info(url)
+      log.info("trying to connect to websockets channel")
+      val dropProtocol = url.drop(6)
+      val host = dropProtocol.split('/')(0)
+      val resource = dropProtocol.drop(host.length)
+
+      websocketClient ! WebSocket.Connect(host , 443, resource, withSsl = true)
     case MigrationInProgress =>
       errors = 0
       restart()
@@ -52,6 +64,6 @@ class BotActor extends Actor with ActorLogging {
   }
 
   def shutdown(): Unit = {
-    system.shutdown()
+    context.system.shutdown()
   }
 }

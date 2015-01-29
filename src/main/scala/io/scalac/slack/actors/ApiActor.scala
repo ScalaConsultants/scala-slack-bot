@@ -2,7 +2,7 @@ package io.scalac.slack.actors
 
 import io.scalac.slack.actors.messages._
 import io.scalac.slack.api.ResponseObject._
-import io.scalac.slack.api.{ApiTestResponse, AuthTestResponse}
+import io.scalac.slack.api.{RtmStartResponse, ApiTestResponse, AuthTestResponse}
 import io.scalac.slack.errors.{ApiTestError, SlackError}
 import spray.http.Uri
 import spray.httpx.RequestBuilding._
@@ -58,8 +58,9 @@ class ApiActor extends ClientActor {
 
       futureResponse onSuccess {
         case response =>
-          log.debug(response.parseJson.prettyPrint)
-        //          val res = response.parseJson.convertTo[RtmStartResponse]
+          val res = response.parseJson.convertTo[RtmStartResponse]
+          if(res.ok)
+            send ! RtmData(res.url)
 
       }
   }

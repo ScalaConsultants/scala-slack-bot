@@ -1,13 +1,31 @@
-import org.joda.time.DateTime
+java.util.UUID.randomUUID.toString
 
-val empty = ""
-val notEmpty = "full"
+val md = java.security.MessageDigest.getInstance("SHA-1")
+val ha = new sun.misc.BASE64Encoder().encode(md.digest("893dcfa8-04c7-476d-a1e2-f1960d15f7f7".getBytes))
 
-implicit def stringToOption(s: String): Option[String] = if (s.isEmpty) None else Some(s)
 
-val opt1: Option[String] = empty
-//opt1: Option[String] = None
-val opt2: Option[String] = notEmpty
-//opt2: Option[String] = Some(full)
+import java.io.File
 
-val dt = new DateTime(1421772055000l)
+import spray.json._
+
+case class Colors(name: String)
+
+object MyJsonProtocol extends DefaultJsonProtocol {
+  implicit val colorFormat = jsonFormat1(Colors)
+}
+
+import MyJsonProtocol._
+
+val colors1 = Colors("blue")
+
+colors1.toJson.prettyPrint
+
+val l = List("20150129151259_insert_new_model.sql",
+  "20150129151332_update_company_model.sql",
+  "20150129151325_update_user_model.sql",
+  "20150129151340_add_index_to_user_table.sql").sorted
+
+l.foreach(a => println(a.take(14)))
+
+
+File.pathSeparatorChar
