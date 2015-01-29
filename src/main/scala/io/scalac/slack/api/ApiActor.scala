@@ -1,9 +1,7 @@
-package io.scalac.slack.actors
+package io.scalac.slack.api
 
-import io.scalac.slack.actors.messages._
 import io.scalac.slack.api.ResponseObject._
-import io.scalac.slack.api.{RtmStartResponse, ApiTestResponse, AuthTestResponse}
-import io.scalac.slack.errors.{ApiTestError, SlackError}
+import io.scalac.slack.{ApiTestError, SlackError}
 import spray.http.Uri
 import spray.httpx.RequestBuilding._
 import spray.json._

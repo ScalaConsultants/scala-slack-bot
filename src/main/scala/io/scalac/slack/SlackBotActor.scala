@@ -1,10 +1,8 @@
-package io.scalac.slack.actors
+package io.scalac.slack
 
 import akka.actor.{Actor, ActorLogging, Props}
-import io.scalac.slack.Config
-import io.scalac.slack.actors.messages._
-import io.scalac.slack.errors.{MigrationInProgress, SlackError}
-import io.scalac.slack.websockets.{WebSocket, WSActor}
+import io.scalac.slack.api._
+import io.scalac.slack.websockets.{WSActor, WebSocket}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -12,7 +10,7 @@ import scala.language.postfixOps
 /**
  * Created on 20.01.15 23:59
  */
-class BotActor extends Actor with ActorLogging {
+class SlackBotActor extends Actor with ActorLogging {
 
   import context.system
 

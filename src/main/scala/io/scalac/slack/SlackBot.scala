@@ -2,8 +2,7 @@ package io.scalac.slack
 
 import akka.actor.{ActorSystem, Props}
 import akka.event.Logging
-import io.scalac.slack.actors.BotActor
-import io.scalac.slack.actors.messages.Start
+import io.scalac.slack.api.Start
 
 /**
  * Created on 20.01.15 21:51
@@ -19,7 +18,7 @@ object SlackBot {
 
     try {
 
-      system.actorOf(Props[BotActor]) ! Start
+      system.actorOf(Props[SlackBotActor]) ! Start
 
       system.awaitTermination()
       logger.info("Shutdown successful...")

@@ -1,7 +1,7 @@
-package io.scalac.slack.actors
+package io.scalac.slack.api
 
 import akka.actor.{Actor, ActorLogging}
-import io.scalac.slack.{Config, Requester}
+import io.scalac.slack.Config
 import spray.client.pipelining._
 import spray.http.{HttpRequest, HttpResponse}
 

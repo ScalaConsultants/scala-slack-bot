@@ -1,9 +1,6 @@
 package io.scalac.slack.api
 
-import io.scalac.slack.actors.messages.AuthData
-import io.scalac.slack.api.models.{SlackUser, ChannelInfo, Channel}
-import org.joda.time.DateTime
-import spray.json._
+import io.scalac.slack.api.models.{Channel, SlackUser}
 
 /**
  * Created on 21.01.15 22:28

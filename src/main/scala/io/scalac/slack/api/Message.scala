@@ -1,6 +1,4 @@
-package io.scalac.slack.actors.messages
-
-import io.scalac.slack.api.APIKey
+package io.scalac.slack.api
 
 /**
  * Created on 20.01.15 23:59

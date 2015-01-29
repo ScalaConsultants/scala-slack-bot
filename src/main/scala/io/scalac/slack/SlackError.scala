@@ -1,4 +1,4 @@
-package io.scalac.slack.errors
+package io.scalac.slack
 
 /**
  * Created on 21.01.15 01:23

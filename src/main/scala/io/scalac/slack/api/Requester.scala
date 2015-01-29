@@ -1,4 +1,4 @@
-package io.scalac.slack
+package io.scalac.slack.api
 
 import spray.http.HttpRequest
 

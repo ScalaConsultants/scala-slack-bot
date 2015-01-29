@@ -1,10 +1,8 @@
-package io.scalac.slack.actors
+package io.scalac.slack
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
-import io.scalac.slack.actors.messages.{ApiTest, AuthData, AuthTest, Ok}
-import io.scalac.slack.api.APIKey
-import io.scalac.slack.errors.{AccountInactive, ApiTestError, InvalidAuth, NotAuthenticated}
+import io.scalac.slack.api._
 import io.scalac.slack.mock.{Api, Auth, MockSlackData}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 

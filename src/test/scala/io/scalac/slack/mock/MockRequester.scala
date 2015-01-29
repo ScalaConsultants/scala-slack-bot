@@ -1,6 +1,6 @@
 package io.scalac.slack.mock
 
-import io.scalac.slack.Requester
+import io.scalac.slack.api.Requester
 import spray.http.HttpRequest
 import spray.httpx.RequestBuilding.Get
 

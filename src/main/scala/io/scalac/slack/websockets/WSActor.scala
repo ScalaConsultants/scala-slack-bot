@@ -1,12 +1,12 @@
 package io.scalac.slack.websockets
 
-import akka.actor.{ActorSystem, Actor}
+import akka.actor.{Actor, ActorSystem}
 import akka.io.IO
 import io.scalac.slack.Config
 import spray.can.Http
 import spray.can.server.UHttp
 import spray.can.websocket.WebSocketClientWorker
-import spray.can.websocket.frame.{TextFrame, CloseFrame, StatusCode, Frame}
+import spray.can.websocket.frame.{CloseFrame, StatusCode, TextFrame}
 import spray.http.{HttpHeaders, HttpMethods, HttpRequest}
 
 /**
@@ -15,7 +15,8 @@ import spray.http.{HttpHeaders, HttpMethods, HttpRequest}
 class WSActor extends Actor with WebSocketClientWorker {
 
   override def receive = connect orElse handshaking orElse closeLogic
-  private def connect() : Receive = {
+
+  private def connect(): Receive = {
     case WebSocket.Connect(host, port, resource, ssl) =>
       val headers = List(
         HttpHeaders.Host(host, port),
@@ -29,18 +30,34 @@ class WSActor extends Actor with WebSocketClientWorker {
 
   override def businessLogic = {
     case WebSocket.Release => close()
-    case TextFrame(msg) =>
+    case TextFrame(msg) => //message received
 
-      println("RECEIVED MESSAGE: "+msg.utf8String)
-    case WebSocket.Send(message) =>
-      println("SENT MESSAGE: "+message)
+      println("RECEIVED MESSAGE: " + msg.utf8String)
+    case WebSocket.Send(message) => //message to send
+      println("SENT MESSAGE: " + message)
       send(message)
     case ignoreThis => // ignore
   }
 
-  def send(message : String) = connection ! TextFrame(message)
+  def send(message: String) = connection ! TextFrame(message)
+
   def close() = connection ! CloseFrame(StatusCode.NormalClose)
-  private var request : HttpRequest = null
+
+  private var request: HttpRequest = null
+
   override def upgradeRequest = request
 
 }
+
+object WebSocket {
+
+  sealed trait WebSocketMessage
+
+  case class Connect(host: String, port: Int, resource: String, withSsl: Boolean = false) extends WebSocketMessage
+
+  case class Send(msg: String) extends WebSocketMessage
+
+  case object Release extends WebSocketMessage
+
+}
+
