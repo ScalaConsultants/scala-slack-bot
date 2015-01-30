@@ -1,4 +1,4 @@
-name := "slack_api"
+name := "slack-scala-bot"
 
 version := "1.0"
 
