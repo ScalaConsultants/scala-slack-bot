@@ -2,13 +2,12 @@ package io.scalac.slack.api
 
 import akka.actor.ActorSystem
 import akka.event.Logging
-import io.scalac.slack.{SlackError, UnspecifiedError}
+import io.scalac.slack.Config
 import spray.client.pipelining._
 import spray.http.{HttpRequest, HttpResponse}
 import spray.json._
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
 
 /**
  * Created on 29.01.15 22:43
@@ -17,31 +16,24 @@ object ApiClient {
 
   val log = Logging
 
-  implicit val system = ActorSystem("Slack API Client")
+  implicit val system = ActorSystem("SlackApiClient")
 
   import io.scalac.slack.api.ApiClient.system.dispatcher
 
   //function from HttpRequest to HttpResponse
   val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
 
-  def request[T <: ResponseObject](request: HttpRequest)(implicit reader: JsonReader[T]): Either[T, SlackError] = {
+  def request[T <: ResponseObject](request: HttpRequest)(implicit reader: JsonReader[T]): Future[T] = {
     val futureResponse = pipeline(request).map(_.entity.asString)
 
-    var result: Either[T, SlackError] = Right(UnspecifiedError(""))
+    //    var result: Either[T, SlackError] = Right(UnspecifiedError(""))
 
-    futureResponse onComplete {
-      case Success(responseString) =>
-        try {
-          val response = JsonParser(responseString).convertTo[T]
-          result = Left(response)
+    for {
+      responseJson <- futureResponse
+      response = JsonParser(responseJson).convertTo[T]
+    } yield response
 
-        } catch {
-          case e: Exception =>
-            result = Right(UnspecifiedError("JSON mapping error"))
-        }
-      case Failure(reason) =>
-        result = Right(UnspecifiedError("Response failure"))
-    }
-    result
   }
+
+  def apiUrl(endpoint: String) = Config.baseUrl(endpoint)
 }

@@ -6,6 +6,8 @@ import spray.http.Uri
 import spray.httpx.RequestBuilding._
 import spray.json._
 
+import scala.util.{Success, Failure}
+
 /**
  * Created on 21.01.15 20:32
  */
@@ -13,25 +15,24 @@ class ApiActor extends ClientActor {
 
   import context.dispatcher
   import io.scalac.slack.api.Unmarshallers._
+  import ApiClient._
 
   override def receive = {
     case ApiTest(param, error) =>
       log.debug("api.test requested")
       val params = Map("param" -> param, "error" -> error).collect { case (key, Some(value)) => key -> value}
-      val uri = Uri(url("api.test")).withQuery(params)
-
-      val futureResponse = request(Get(uri))
+      val url = Uri(apiUrl("api.test")).withQuery(params)
 
       val send = sender()
-      futureResponse onSuccess {
-        case result =>
-//          val res = result.parseJson.convertTo[ApiTestResponse]
-          val res = result.parseJson.convertTo[AuthTestResponse]
 
+      ApiClient.request[ApiTestResponse](Get(url)) onComplete {
+        case Success(res) =>
           if (res.ok)
-            send ! Ok(None)
+            send ! Ok(res.args)
           else
             send ! ApiTestError
+        case Failure(e) =>
+          send ! e
 
       }
 
