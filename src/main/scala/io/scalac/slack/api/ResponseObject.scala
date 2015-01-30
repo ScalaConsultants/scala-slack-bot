@@ -9,9 +9,9 @@ sealed trait ResponseObject
 
 case class ApiTestResponse(ok: Boolean, error: Option[String], args: Option[Map[String, String]]) extends ResponseObject
 
-case class AuthTestResponse(ok: Boolean, error: Option[String], url: Option[String], team: Option[String], user: Option[String], team_id: Option[String], user_id: Option[String])
+case class AuthTestResponse(ok: Boolean, error: Option[String], url: Option[String], team: Option[String], user: Option[String], team_id: Option[String], user_id: Option[String]) extends ResponseObject
 
-case class RtmStartResponse(ok: Boolean, url: String, users: List[SlackUser], channels: List[Channel])
+case class RtmStartResponse(ok: Boolean, url: String, users: List[SlackUser], channels: List[Channel]) extends ResponseObject
 
 object ResponseObject {
   implicit def authTestResponseToAuthData(atr: AuthTestResponse): AuthData =

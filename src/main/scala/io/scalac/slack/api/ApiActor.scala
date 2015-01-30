@@ -6,7 +6,7 @@ import spray.http.Uri
 import spray.httpx.RequestBuilding._
 import spray.json._
 
-import scala.util.{Success, Failure}
+import scala.util.{Failure, Success}
 
 /**
  * Created on 21.01.15 20:32
@@ -15,22 +15,22 @@ class ApiActor extends ClientActor {
 
   import context.dispatcher
   import io.scalac.slack.api.Unmarshallers._
-  import ApiClient._
 
   override def receive = {
     case ApiTest(param, error) =>
       log.debug("api.test requested")
       val params = Map("param" -> param, "error" -> error).collect { case (key, Some(value)) => key -> value}
-      val url = Uri(apiUrl("api.test")).withQuery(params)
 
       val send = sender()
 
-      ApiClient.request[ApiTestResponse](Get(url)) onComplete {
+      ApiClient.get[ApiTestResponse]("api.test", params) onComplete {
         case Success(res) =>
-          if (res.ok)
+          if (res.ok) {
             send ! Ok(res.args)
-          else
+          }
+          else {
             send ! ApiTestError
+          }
         case Failure(e) =>
           send ! e
 
@@ -60,7 +60,7 @@ class ApiActor extends ClientActor {
       futureResponse onSuccess {
         case response =>
           val res = response.parseJson.convertTo[RtmStartResponse]
-          if(res.ok)
+          if (res.ok)
             send ! RtmData(res.url)
 
       }

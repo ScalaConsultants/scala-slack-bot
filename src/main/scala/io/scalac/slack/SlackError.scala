@@ -5,8 +5,6 @@ package io.scalac.slack
  */
 sealed trait SlackError
 
-
-
 object ApiTestError extends SlackError
 
 //no authentication token provided
