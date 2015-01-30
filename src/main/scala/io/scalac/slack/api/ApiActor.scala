@@ -1,29 +1,27 @@
 package io.scalac.slack.api
 
+import akka.actor.{Actor, ActorLogging}
 import io.scalac.slack.api.ResponseObject._
 import io.scalac.slack.{ApiTestError, SlackError}
-import spray.http.Uri
-import spray.httpx.RequestBuilding._
-import spray.json._
 
 import scala.util.{Failure, Success}
 
 /**
  * Created on 21.01.15 20:32
  */
-class ApiActor extends ClientActor {
+class ApiActor extends Actor with ActorLogging {
 
   import context.dispatcher
   import io.scalac.slack.api.Unmarshallers._
 
   override def receive = {
+
     case ApiTest(param, error) =>
       log.debug("api.test requested")
+      val send = sender()
       val params = Map("param" -> param, "error" -> error).collect { case (key, Some(value)) => key -> value}
 
-      val send = sender()
-
-      ApiClient.get[ApiTestResponse]("api.test", params) onComplete {
+      SlackApiClient.get[ApiTestResponse]("api.test", params) onComplete {
         case Success(res) =>
           if (res.ok) {
             send ! Ok(res.args)
@@ -31,38 +29,37 @@ class ApiActor extends ClientActor {
           else {
             send ! ApiTestError
           }
-        case Failure(e) =>
-          send ! e
+        case Failure(ex) =>
+          send ! ex
 
       }
 
     case AuthTest(token) =>
       log.debug("auth.test requested")
-      val uri = Uri(url("auth.test")).withQuery("token" -> token.key)
-
-      val futureResponse = request(Get(uri))
       val send = sender()
-      futureResponse onSuccess {
-        case response =>
-          val res = response.parseJson.convertTo[AuthTestResponse]
+
+      SlackApiClient.get[AuthTestResponse]("auth.test", Map("token" -> token.key)) onComplete {
+        case Success(res) =>
+
           if (res.ok)
             send ! AuthData(res)
           else
             send ! SlackError(res.error.get)
+        case Failure(ex) =>
+          send ! ex
       }
+
     case RtmStart(token) =>
       log.debug("rtm.start requested")
-      val uri = Uri(url("rtm.start")).withQuery("token" -> token.key)
-      val futureResponse = request(Get(uri))
-
       val send = sender()
 
-      futureResponse onSuccess {
-        case response =>
-          val res = response.parseJson.convertTo[RtmStartResponse]
+      SlackApiClient.get[RtmStartResponse]("rtm.start", Map("token" -> token.key)) onComplete {
+
+        case Success(res) =>
           if (res.ok)
             send ! RtmData(res.url)
-
+        case Failure(ex) =>
+          send ! ex
       }
   }
 }

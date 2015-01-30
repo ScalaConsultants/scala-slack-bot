@@ -1,8 +1,7 @@
 package io.scalac.slack
 
-import io.scalac.slack.models.{Away, SlackUser, ChannelInfo, Channel}
-import io.scalac.slack.api.{RtmStartResponse, ApiTestResponse, AuthTestResponse}
-import io.scalac.slack.mock.MockSlackData
+import io.scalac.slack.api.{ApiTestResponse, AuthTestResponse, RtmStartResponse}
+import io.scalac.slack.models.{Away, Channel, ChannelInfo, SlackUser}
 import org.joda.time.DateTime
 import org.scalatest.{FunSuite, Matchers}
 import spray.json._
@@ -10,8 +9,16 @@ import spray.json._
 /**
  * Created on 27.01.15 22:39
  */
-class UnmarshallerTest extends FunSuite with Matchers with MockSlackData{
+class UnmarshallerTest extends FunSuite with Matchers {
+
   import io.scalac.slack.api.Unmarshallers._
+
+  val url = "https://testapp.slack.com/"
+  val team = "testteam"
+  val username = "testuser"
+  val teamId = "T03DN3GTN"
+  val userId = "U03DQKG34"
+
 
   test("api.test empty response") {
     val response = /*language=JSON*/ """{"ok":true}"""
@@ -532,11 +539,11 @@ class UnmarshallerTest extends FunSuite with Matchers with MockSlackData{
     val rtmResponse = response.parseJson.convertTo[RtmStartResponse]
 
     rtmResponse shouldBe 'ok
-    rtmResponse.url should equal ("wss://ms25.slack-msgs.com/websocket/_eQUaO1csLMyoe4p4rUgEIH/W/gEruHxke8x0TNSE0ltMOdO7bHsP_W9mOznr5U1DzWvW7qs6BZulFXKcg0X2giBxV8UaHtptGEK0_F_rUA=")
+    rtmResponse.url should equal("wss://ms25.slack-msgs.com/websocket/_eQUaO1csLMyoe4p4rUgEIH/W/gEruHxke8x0TNSE0ltMOdO7bHsP_W9mOznr5U1DzWvW7qs6BZulFXKcg0X2giBxV8UaHtptGEK0_F_rUA=")
     rtmResponse.users shouldBe 'nonEmpty
     rtmResponse.channels shouldBe 'nonEmpty
-    rtmResponse.users.size should equal (7)
-    rtmResponse.channels.size should equal (2)
+    rtmResponse.users.size should equal(7)
+    rtmResponse.channels.size should equal(2)
   }
 
   test("long channel unmarshall") {
@@ -678,16 +685,16 @@ class UnmarshallerTest extends FunSuite with Matchers with MockSlackData{
 
     val user = userString.parseJson.convertTo[SlackUser]
 
-    user.isBot should equal (Some(false))
-    user.name should equal ("benek")
-    user.id should equal ("U03DKUF05")
+    user.isBot should equal(Some(false))
+    user.name should equal("benek")
+    user.id should equal("U03DKUF05")
     user should not be 'deleted
-    user.isAdmin should equal (Some(false))
-    user.isOwner should equal (Some(false))
-    user.isPrimaryOwner should equal (Some(false))
-    user.isRestricted should equal (Some(false))
-    user.isUltraRestricted should equal (Some(false))
-    user.hasFiles should equal (Some(false))
-    user.presence should equal (Away)
+    user.isAdmin should equal(Some(false))
+    user.isOwner should equal(Some(false))
+    user.isPrimaryOwner should equal(Some(false))
+    user.isRestricted should equal(Some(false))
+    user.isUltraRestricted should equal(Some(false))
+    user.hasFiles should equal(Some(false))
+    user.presence should equal(Away)
   }
 }
