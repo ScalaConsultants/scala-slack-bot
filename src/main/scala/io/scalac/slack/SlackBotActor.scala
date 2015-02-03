@@ -2,6 +2,8 @@ package io.scalac.slack
 
 import akka.actor.{Actor, ActorLogging, Props}
 import io.scalac.slack.api._
+import io.scalac.slack.bots.digest.DigestBotActor
+import io.scalac.slack.common.BotModules
 import io.scalac.slack.websockets.{WSActor, WebSocket}
 
 import scala.concurrent.duration._
@@ -44,6 +46,7 @@ class SlackBotActor extends Actor with ActorLogging {
       val resource = dropProtocol.drop(host.length)
 
       websocketClient ! WebSocket.Connect(host , 443, resource, withSsl = true)
+      BotModules.registerModules(context, websocketClient)
     case MigrationInProgress =>
       errors = 0
       restart()
