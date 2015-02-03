@@ -3,6 +3,7 @@ package io.scalac.slack.websockets
 import akka.actor.{ActorRef, Actor, ActorSystem}
 import akka.io.IO
 import io.scalac.slack.Config
+import io.scalac.slack.common.MessageCounter
 import spray.can.Http
 import spray.can.server.UHttp
 import spray.can.websocket.WebSocketClientWorker
@@ -17,6 +18,8 @@ class WSActor extends Actor with WebSocketClientWorker {
   import WebSocket._
 
   private var registeredBots = List[ActorRef]()
+
+  private val counter = new MessageCounter()
 
   override def receive = connect orElse handshaking orElse closeLogic
 
@@ -41,7 +44,8 @@ class WSActor extends Actor with WebSocketClientWorker {
       println("RECEIVED MESSAGE: " + msg.utf8String)
       publishToBots(msg.utf8String)
     case WebSocket.Send(message) => //message to send
-      println("SENT MESSAGE: " + message)
+      val id = counter.get() // TODO: should insert this id into message
+      println(s"SENT MESSAGE: $message ID: $id")
       send(message)
     case ignoreThis => // ignore
   }
