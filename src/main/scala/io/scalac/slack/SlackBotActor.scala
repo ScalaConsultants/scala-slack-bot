@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern._
 import akka.util.Timeout
 import io.scalac.slack.api._
+import io.scalac.slack.common.BotModules
 import io.scalac.slack.websockets.{WSActor, WebSocket}
 
 import scala.concurrent.Await
@@ -54,6 +55,8 @@ class SlackBotActor extends Actor with ActorLogging {
       val result = Await.result(connect, timeout.duration)
 
       log.info(result.toString)
+
+      BotModules.registerModules(context, websocketClient)
 
     case MigrationInProgress =>
       errors = 0
