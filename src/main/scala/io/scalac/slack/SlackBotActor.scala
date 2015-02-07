@@ -1,9 +1,12 @@
 package io.scalac.slack
 
 import akka.actor.{Actor, ActorLogging, Props}
+import akka.pattern._
+import akka.util.Timeout
 import io.scalac.slack.api._
 import io.scalac.slack.websockets.{WSActor, WebSocket}
 
+import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -18,7 +21,7 @@ class SlackBotActor extends Actor with ActorLogging {
 
   var errors = 0
 
-  val websocketClient = context.actorOf(Props[WSActor])
+  val websocketClient = context.actorOf(Props[WSActor], "ws-actor")
 
   override def receive: Receive = {
     case Start =>
@@ -43,7 +46,33 @@ class SlackBotActor extends Actor with ActorLogging {
       val host = dropProtocol.split('/')(0)
       val resource = dropProtocol.drop(host.length)
 
-      websocketClient ! WebSocket.Connect(host , 443, resource, withSsl = true)
+      implicit val timeout: Timeout = 5.seconds
+
+      log.info(s"Connecting to host [$host] and resource [$resource]")
+      val connect = websocketClient ? WebSocket.Connect(host, 443, resource, withSsl = true)
+
+      val result = Await.result(connect, timeout.duration)
+
+      log.info(result.toString)
+
+      Thread.sleep(5000)
+      websocketClient ! WebSocket.Send( """{
+                                          |    "id": 123123904,
+                                          |    "type": "ping",
+                                          |    "time": 1403299273342
+                                          |}""".stripMargin)
+      log.info("after ping message")
+      Thread.sleep(3000)
+
+      val mes = """{
+                  |    "id": 1,
+                  |    "type": "message",
+                  |    "channel": "C03DN1GUJ",
+                  |    "text": "Hello world"
+                  |}""".stripMargin
+      websocketClient ! WebSocket.Send(mes)
+
+
     case MigrationInProgress =>
       errors = 0
       restart()
