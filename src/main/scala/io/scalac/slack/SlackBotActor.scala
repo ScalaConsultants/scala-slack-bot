@@ -64,9 +64,8 @@ class SlackBotActor extends Actor with ActorLogging {
                                           |    "time": 1403299273342
                                           |}""".stripMargin)
 
-
-
       BotModules.registerModules(context, websocketClient)
+
     case MigrationInProgress =>
       errors = 0
       restart()
