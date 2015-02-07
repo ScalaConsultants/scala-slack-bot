@@ -6,8 +6,8 @@ import io.scalac.slack.websockets.WebSocket
 object BotModules {
 
   def registerModules(context: ActorContext, websocketClient: ActorRef) = {
-    List(
-      context.actorOf(Props(classOf[DigestBotActor], websocketClient), "digest-bot")
-    ).foreach(module => websocketClient ! WebSocket.RegisterModule(module) )
+//    List(
+//      context.actorOf(Props(classOf[DigestBotActor], websocketClient), "digest-bot")
+//    ).foreach(module => websocketClient ! WebSocket.RegisterModule(module) )
   }
 }

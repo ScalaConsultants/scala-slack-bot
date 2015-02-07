@@ -18,7 +18,7 @@ object SlackBot {
 
     try {
 
-      system.actorOf(Props[SlackBotActor]) ! Start
+      system.actorOf(Props[SlackBotActor], "slack-bot") ! Start
 
       system.awaitTermination()
       logger.info("Shutdown successful...")

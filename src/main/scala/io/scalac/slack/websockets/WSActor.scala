@@ -15,16 +15,10 @@ import spray.http.{HttpHeaders, HttpMethods, HttpRequest}
  */
 class WSActor extends Actor with WebSocketClientWorker {
 
-  import WebSocket._
-
-  private var registeredBots = List[ActorRef]()
-
-  private val counter = new MessageCounter()
-
   override def receive = connect orElse handshaking orElse closeLogic
 
   private def connect(): Receive = {
-    case Connect(host, port, resource, ssl) =>
+    case WebSocket.Connect(host, port, resource, ssl) =>
       val headers = List(
         HttpHeaders.Host(host, port),
         HttpHeaders.Connection("Upgrade"),
@@ -32,27 +26,20 @@ class WSActor extends Actor with WebSocketClientWorker {
         HttpHeaders.RawHeader("Sec-WebSocket-Version", "13"),
         HttpHeaders.RawHeader("Sec-WebSocket-Key", Config.websocketKey))
       request = HttpRequest(HttpMethods.GET, resource, headers)
-      IO(UHttp)(ActorSystem("websocketwor")) ! Http.Connect(host, port, ssl)
-
-    case RegisterModule(newActor) =>
-      registeredBots = newActor :: registeredBots
+      IO(UHttp)(context.system) ! Http.Connect(host, port, ssl)
+    sender() ! "connected"
   }
 
   override def businessLogic = {
     case WebSocket.Release => close()
     case TextFrame(msg) => //message received
       println("RECEIVED MESSAGE: " + msg.utf8String)
-      publishToBots(msg.utf8String)
+
     case WebSocket.Send(message) => //message to send
-      val id = counter.get() // TODO: should insert this id into message
-      println(s"SENT MESSAGE: $message ID: $id")
+
+      println(s"SENT MESSAGE: $message ")
       send(message)
     case ignoreThis => // ignore
-  }
-
-  private def publishToBots(msg: String) =  {
-    val protocolMsg = convertToprotocol(msg)
-    registeredBots.foreach(_ ! protocolMsg)
   }
 
   private def convertToprotocol(msg: String) = msg //TODO: convert to common format - case classes/objects
@@ -80,7 +67,5 @@ object WebSocket {
   case class Send(msg: String) extends WebSocketMessage
 
   case object Release extends WebSocketMessage
-
-  case class RegisterModule(actor: ActorRef)
 }
 
