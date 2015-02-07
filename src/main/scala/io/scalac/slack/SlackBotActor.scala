@@ -55,7 +55,9 @@ class SlackBotActor extends Actor with ActorLogging {
       val result = Await.result(connect, timeout.duration)
       log.info(result.toString)
 
-      Thread.sleep(3500L)
+
+      Thread.sleep(3500L)//gracefully wait for start system
+
       websocketClient ! WebSocket.Send( """{
                                           |    "id": 123123904,
                                           |    "type": "ping",

@@ -1,9 +1,8 @@
 package io.scalac.slack.websockets
 
-import akka.actor.{ActorRef, Actor, ActorSystem}
+import akka.actor.Actor
 import akka.io.IO
 import io.scalac.slack.Config
-import io.scalac.slack.common.MessageCounter
 import spray.can.Http
 import spray.can.server.UHttp
 import spray.can.websocket.WebSocketClientWorker
@@ -41,8 +40,6 @@ class WSActor extends Actor with WebSocketClientWorker {
       send(message)
     case ignoreThis => // ignore
   }
-
-  private def convertToprotocol(msg: String) = msg //TODO: convert to common format - case classes/objects
 
   def send(message: String) = connection ! TextFrame(message)
 
