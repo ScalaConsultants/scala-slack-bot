@@ -34,8 +34,11 @@ class WSActor extends Actor with WebSocketClientWorker {
       request = HttpRequest(HttpMethods.GET, resource, headers)
       IO(UHttp)(ActorSystem("websocketwor")) ! Http.Connect(host, port, ssl)
 
+      sender() ! "connected"
+
     case RegisterModule(newActor) =>
       registeredBots = newActor :: registeredBots
+
   }
 
   override def businessLogic = {
