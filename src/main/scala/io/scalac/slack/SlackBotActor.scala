@@ -55,24 +55,6 @@ class SlackBotActor extends Actor with ActorLogging {
 
       log.info(result.toString)
 
-      Thread.sleep(5000)
-      websocketClient ! WebSocket.Send( """{
-                                          |    "id": 123123904,
-                                          |    "type": "ping",
-                                          |    "time": 1403299273342
-                                          |}""".stripMargin)
-      log.info("after ping message")
-      Thread.sleep(3000)
-
-      val mes = """{
-                  |    "id": 1,
-                  |    "type": "message",
-                  |    "channel": "C03DN1GUJ",
-                  |    "text": "Hello world"
-                  |}""".stripMargin
-      websocketClient ! WebSocket.Send(mes)
-
-
     case MigrationInProgress =>
       errors = 0
       restart()
