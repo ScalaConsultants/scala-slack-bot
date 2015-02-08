@@ -2,7 +2,7 @@ package io.scalac.slack.common
 
 import java.util.concurrent.atomic.AtomicInteger
 
-class MessageCounter() {
+object MessageCounter {
   private val cc = new AtomicInteger(0)
-  def get() = cc.incrementAndGet()
+  def next = cc.incrementAndGet()
 }
