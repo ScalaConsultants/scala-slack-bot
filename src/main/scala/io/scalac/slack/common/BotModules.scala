@@ -1,13 +1,14 @@
 package io.scalac.slack.common
 
-import akka.actor.{ActorRef, ActorContext, Props}
-import io.scalac.slack.bots.digest.DigestBotActor
-import io.scalac.slack.websockets.WebSocket
+import akka.actor.{ActorContext, ActorRef, Props}
+import io.scalac.slack.bots.digest.LoggingActor
+
 object BotModules {
 
   def registerModules(context: ActorContext, websocketClient: ActorRef) = {
-//    List(
-//      context.actorOf(Props(classOf[DigestBotActor], websocketClient), "digest-bot")
-//    ).foreach(module => websocketClient ! WebSocket.RegisterModule(module) )
+    val loggerBot = context.actorOf(Props[LoggingActor], "loggin-bot")
+    context.system.eventStream.subscribe(loggerBot, classOf[UnspecifiedEvent])
+
+
   }
 }

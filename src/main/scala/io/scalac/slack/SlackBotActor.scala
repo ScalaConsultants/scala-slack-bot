@@ -1,11 +1,12 @@
 package io.scalac.slack
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Props, Actor, ActorLogging}
 import akka.pattern._
 import akka.util.Timeout
 import io.scalac.slack.api._
-import io.scalac.slack.common.BotModules
-import io.scalac.slack.websockets.{WSActor, WebSocket}
+import io.scalac.slack.common.Message
+import io.scalac.slack.common._
+import io.scalac.slack.websockets.{MessageListenerActor, WSActor, WebSocket}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -23,6 +24,10 @@ class SlackBotActor extends Actor with ActorLogging {
   var errors = 0
 
   val websocketClient = context.actorOf(Props[WSActor], "ws-actor")
+  //register listener to listen to messages
+  val messageProcessor = context.actorOf(Props(new MessageListenerActor(websocketClient)), "message-processor")
+  context.system.eventStream.subscribe(messageProcessor, classOf[Message])
+
 
   override def receive: Receive = {
     case Start =>
@@ -58,10 +63,11 @@ class SlackBotActor extends Actor with ActorLogging {
 
       Thread.sleep(3500L)//gracefully wait for start system
 
-      websocketClient ! WebSocket.Send( """{
-                                          |    "id": 123123904,
+      //      context.system.eventStream.publish(Ping)
+      websocketClient ! WebSocket.Send( s"""{
+                                          |    "id": ${MessageCounter.next},
                                           |    "type": "ping",
-                                          |    "time": 1403299273342
+                                          |    "time": ${SlackDateTime.timeStamp}
                                           |}""".stripMargin)
 
       BotModules.registerModules(context, websocketClient)

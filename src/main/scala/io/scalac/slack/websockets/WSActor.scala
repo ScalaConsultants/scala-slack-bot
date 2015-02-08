@@ -1,6 +1,6 @@
 package io.scalac.slack.websockets
 
-import akka.actor.Actor
+import akka.actor.{Actor, Props}
 import akka.io.IO
 import io.scalac.slack.Config
 import spray.can.Http
@@ -15,6 +15,8 @@ import spray.http.{HttpHeaders, HttpMethods, HttpRequest}
 class WSActor extends Actor with WebSocketClientWorker {
 
   override def receive = connect orElse handshaking orElse closeLogic
+
+  val eventProcessor = context.actorOf(Props[EventProcessingActor], "event-processor")
 
   private def connect(): Receive = {
     case WebSocket.Connect(host, port, resource, ssl) =>
@@ -32,8 +34,13 @@ class WSActor extends Actor with WebSocketClientWorker {
   override def businessLogic = {
     case WebSocket.Release => close()
     case TextFrame(msg) => //message received
-      println("RECEIVED MESSAGE: " + msg.utf8String)
 
+      // Each message without parsing is sent to eventprocessor
+      // Because all messages from websockets should be read fast
+      // If EventProcessor slow down with parsing
+      // can be used dispatcher
+      eventProcessor ! msg.utf8String
+      println("[WS_ACTOR] Received MEssage: " + msg.utf8String)
     case WebSocket.Send(message) => //message to send
 
       println(s"SENT MESSAGE: $message ")
@@ -56,13 +63,14 @@ object WebSocket {
   sealed trait WebSocketMessage
 
   case class Connect(
-    host: String,
-    port: Int,
-    resource: String,
-    withSsl: Boolean = false) extends WebSocketMessage
+                      host: String,
+                      port: Int,
+                      resource: String,
+                      withSsl: Boolean = false) extends WebSocketMessage
 
   case class Send(msg: String) extends WebSocketMessage
 
   case object Release extends WebSocketMessage
+
 }
 
