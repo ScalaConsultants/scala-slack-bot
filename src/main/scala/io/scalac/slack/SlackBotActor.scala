@@ -1,5 +1,7 @@
 package io.scalac.slack
 
+import java.util.concurrent.TimeUnit
+
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern._
 import akka.util.Timeout
@@ -56,9 +58,10 @@ class SlackBotActor extends Actor with ActorLogging {
       val result = Await.result(connect, timeout.duration)
       log.info(result.toString)
 
+      import context.dispatcher
+      context.system.scheduler.scheduleOnce(Duration.create(5, TimeUnit.SECONDS), self, RegisterModules)
 
-      Thread.sleep(3500L) //gracefully wait for start system
-
+    case RegisterModules =>
       BotModules.registerModules(context, websocketClient)
 
     case MigrationInProgress =>

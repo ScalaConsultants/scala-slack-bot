@@ -6,9 +6,9 @@ package io.scalac.slack.api
  */
 sealed trait Message
 
-object Start extends Message
-
-object Stop extends Message
+case object Start extends Message
+case object Stop extends Message
+case object RegisterModules extends Message
 
 //API CALLS
 case class ApiTest(param: Option[String] = None, error: Option[String] = None) extends Message
