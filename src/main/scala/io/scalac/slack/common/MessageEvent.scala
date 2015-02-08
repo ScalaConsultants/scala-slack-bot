@@ -21,10 +21,7 @@ case class DirectMessage(text: String) extends IncomingMessage
  */
 trait OutgoingMessage extends MessageEvent
 
-case object Ping extends OutgoingMessage {
-  override def toString = s"""{id: ${MessageCounter.next}, type: "ping",time: ${SlackDateTime.timeStamp}}"""
-
-}
+case object Ping extends OutgoingMessage
 
 
 /**

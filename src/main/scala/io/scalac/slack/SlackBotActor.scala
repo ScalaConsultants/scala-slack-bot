@@ -59,13 +59,6 @@ class SlackBotActor extends Actor with ActorLogging {
 
       Thread.sleep(3500L) //gracefully wait for start system
 
-      context.system.eventStream.publish(Ping)
-      websocketClient ! WebSocket.Send( s"""{
-                                           |   "id": ${MessageCounter.next},
-                                                                             |   "type": "ping",
-                                                                             |   "time": ${SlackDateTime.timeStamp}
-          |}""".stripMargin)
-
       BotModules.registerModules(context, websocketClient)
 
     case MigrationInProgress =>
