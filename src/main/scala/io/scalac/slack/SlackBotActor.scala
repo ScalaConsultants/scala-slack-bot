@@ -55,6 +55,8 @@ class SlackBotActor extends Actor with ActorLogging {
       log.info(s"Connecting to host [$host] and resource [$resource]")
 
       val connect = websocketClient ? WebSocket.Connect(host, 443, resource, withSsl = true)
+      // TODO (JZ): We don't need to block here.
+      // connect.mapTo[ExpectedType].map { result => sendMessageToMyself(result) }  
       val result = Await.result(connect, timeout.duration)
       log.info(result.toString)
 
@@ -75,6 +77,7 @@ class SlackBotActor extends Actor with ActorLogging {
   def restart(): Unit = {
     import context.dispatcher
     errors += 1
+    // TODO (JZ) remove this `if` and use guards in case clauses above
     if (errors < 10) {
       log.error(s"connection error [$errors], repeat for 10 seconds")
       system.scheduler.scheduleOnce(10.seconds, self, Start)
