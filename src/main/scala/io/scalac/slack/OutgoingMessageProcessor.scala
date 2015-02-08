@@ -6,6 +6,8 @@ import io.scalac.slack.websockets.WebSocket
 
 /**
  * Created on 08.02.15 23:00
+ * Outgoing message protocol should change received
+ * protocol into string and send it to websocket
  */
 class OutgoingMessageProcessor(wsActor: ActorRef) extends Actor with ActorLogging {
 

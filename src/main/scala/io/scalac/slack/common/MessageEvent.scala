@@ -14,6 +14,7 @@ case object Pong extends IncomingMessage
 
 
 case class DirectMessage(text: String) extends IncomingMessage
+case class UndefinedMessage(body: String) extends IncomingMessage
 
 
 /**
