@@ -9,8 +9,11 @@ import io.scalac.slack.api.Start
  */
 object SlackBot {
 
+  val system = ActorSystem("SlackBotSystem")
+  val eventBus = new MessageEventBus
+
+
   def main(args: Array[String]) {
-    val system = ActorSystem("SlackBotSystem")
     val logger = Logging(system, getClass)
 
     logger.info("SlackBot started")

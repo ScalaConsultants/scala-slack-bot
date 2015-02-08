@@ -1,6 +1,6 @@
 package io.scalac.slack.websockets
 
-import akka.actor.{Actor, Props}
+import akka.actor.Actor
 import akka.io.IO
 import io.scalac.slack.Config
 import spray.can.Http
@@ -15,8 +15,6 @@ import spray.http.{HttpHeaders, HttpMethods, HttpRequest}
 class WSActor extends Actor with WebSocketClientWorker {
 
   override def receive = connect orElse handshaking orElse closeLogic
-
-  val eventProcessor = context.actorOf(Props[EventProcessingActor], "event-processor")
 
   private def connect(): Receive = {
     case WebSocket.Connect(host, port, resource, ssl) =>
@@ -39,7 +37,6 @@ class WSActor extends Actor with WebSocketClientWorker {
       // Because all messages from websockets should be read fast
       // If EventProcessor slow down with parsing
       // can be used dispatcher
-      eventProcessor ! msg.utf8String
       println("[WS_ACTOR] Received MEssage: " + msg.utf8String)
     case WebSocket.Send(message) => //message to send
 
