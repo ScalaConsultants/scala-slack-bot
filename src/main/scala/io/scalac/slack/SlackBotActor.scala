@@ -22,6 +22,7 @@ class SlackBotActor extends Actor with ActorLogging {
 
   val api = context.actorOf(Props[ApiActor])
 
+  //TODO (JZ) Just an idea: http://doc.akka.io/docs/akka/2.3.9/common/circuitbreaker.html
   var errors = 0
 
   val websocketClient = context.actorOf(Props[WSActor], "ws-actor")
