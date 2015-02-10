@@ -26,9 +26,23 @@ case class UndefinedMessage(body: String) extends IncomingMessage
 /**
  * Outgoing message types
  */
-trait OutgoingMessage extends MessageEvent
+trait OutgoingMessage extends MessageEvent {
+  def toJson: String
+}
 
-case object Ping extends OutgoingMessage
+case object Ping extends OutgoingMessage {
+  override def toJson = s"""{"id": ${MessageCounter.next}, "type": "ping","time": ${SlackDateTime.timeStamp()}}"""
+}
+
+case class OutboundMessage(channel: String, text: String) extends OutgoingMessage {
+  override def toJson =
+    s"""{
+      | "id": ${MessageCounter.next},
+      | "type": "message",
+      | "channel": "$channel",
+      | "text": "$text"
+      |}""".stripMargin
+}
 
 
 /**
