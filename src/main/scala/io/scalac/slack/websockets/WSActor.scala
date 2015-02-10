@@ -8,7 +8,7 @@ import spray.can.server.UHttp
 import spray.can.websocket.WebSocketClientWorker
 import spray.can.websocket.frame.{CloseFrame, StatusCode, TextFrame}
 import spray.http.{HttpHeaders, HttpMethods, HttpRequest}
-
+import spray.json._
 /**
  * Created on 28.01.15 19:45
  */
@@ -40,7 +40,9 @@ class WSActor extends Actor with WebSocketClientWorker {
       // Because all messages from websockets should be read fast
       // If EventProcessor slow down with parsing
       // can be used dispatcher
+      println(s"RECEIVED MESSAGE: ${msg.utf8String} ")
       in ! msg.utf8String
+
     case WebSocket.Send(message) => //message to send
 
       println(s"SENT MESSAGE: $message ")

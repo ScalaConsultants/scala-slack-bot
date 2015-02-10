@@ -14,23 +14,23 @@ object SlackDateTime {
    *
    * @return 13-digist long timestamp (miliseconds)
    */
-  def timeStamp: String = {
-    DateTime.now.getMillis.toString //timestamp in milis
+  def timeStamp(dt: DateTime = DateTime.now): String = {
+    dt.getMillis.toString //timestamp in milis
   }
 
   /**
    *
    * @return 10-digits long timestamp (seconds)
    */
-  def seconds: String = {
-    (DateTime.now.getMillis / 1000).toString
+  def seconds(dt: DateTime = DateTime.now): String = {
+    (dt.getMillis / 1000).toString
   }
 
   /**
    *
    * @return 10-digits long timestamp with unique connection ID
    */
-  def uniqueTimeStamp: String = {
-    seconds + "." + f"${MessageCounter.next}%06d"
+  def uniqueTimeStamp(dt: DateTime = DateTime.now): String = {
+    seconds(dt) + "." + f"${MessageCounter.next}%06d"
   }
 }

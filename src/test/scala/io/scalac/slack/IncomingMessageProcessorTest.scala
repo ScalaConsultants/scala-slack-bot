@@ -2,7 +2,8 @@ package io.scalac.slack
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import io.scalac.slack.common.{Incoming, IncomingMessage, UndefinedMessage}
+import io.scalac.slack.common._
+import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.duration._
@@ -50,6 +51,20 @@ class IncomingMessageProcessorTest(_system: ActorSystem) extends TestKit(_system
       matrix() { entry =>
         entry ! "just string!"
         theProbe.expectMsg(1 second, UndefinedMessage("just string!"))
+      }
+    }
+    "push hello Object into event bus" in {
+      matrix() {
+        entry =>
+          entry ! """{"type":"hello"}"""
+          theProbe.expectMsg(1 second, Hello)
+      }
+    }
+    "push pong object into event bus" in {
+      matrix() { entry =>
+        entry ! """{"type":"pong","time":1423985025000,"reply_to":1}"""
+
+        theProbe.expectMsg(1 second, Pong)
       }
     }
   }

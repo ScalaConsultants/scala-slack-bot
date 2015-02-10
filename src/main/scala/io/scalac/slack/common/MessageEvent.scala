@@ -1,5 +1,7 @@
 package io.scalac.slack.common
 
+import org.joda.time.DateTime
+
 /**
  * Created on 08.02.15 22:04
  */
