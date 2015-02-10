@@ -3,14 +3,21 @@ package io.scalac.slack
 import akka.actor.{ActorSystem, Props}
 import akka.event.Logging
 import io.scalac.slack.api.Start
+import io.scalac.slack.websockets.{WSActor, WebSocket}
 
 /**
  * Created on 20.01.15 21:51
  */
 object SlackBot {
 
+  val system = ActorSystem("SlackBotSystem")
+
+  val eventBus = new MessageEventBus
+
+  val websocketClient = system.actorOf(Props[WSActor], "ws-actor")
+  val slackBot = system.actorOf(Props[SlackBotActor], "slack-bot")
+
   def main(args: Array[String]) {
-    val system = ActorSystem("SlackBotSystem")
     val logger = Logging(system, getClass)
 
     logger.info("SlackBot started")
@@ -18,7 +25,7 @@ object SlackBot {
 
     try {
 
-      system.actorOf(Props[SlackBotActor], "slack-bot") ! Start
+      slackBot ! Start
 
       system.awaitTermination()
       logger.info("Shutdown successful...")
@@ -30,6 +37,14 @@ object SlackBot {
         system.awaitTermination()
     }
 
+  }
+
+  sys.addShutdownHook(shutdown())
+
+  def shutdown(): Unit = {
+    websocketClient ! WebSocket.Release
+    system.shutdown()
+    system.awaitTermination()
   }
 
 }
