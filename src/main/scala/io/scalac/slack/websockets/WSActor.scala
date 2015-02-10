@@ -29,7 +29,6 @@ class WSActor extends Actor with WebSocketClientWorker {
         HttpHeaders.RawHeader("Sec-WebSocket-Key", Config.websocketKey))
       request = HttpRequest(HttpMethods.GET, resource, headers)
       IO(UHttp)(context.system) ! Http.Connect(host, port, ssl)
-      sender() ! "connected"
   }
 
   override def businessLogic = {

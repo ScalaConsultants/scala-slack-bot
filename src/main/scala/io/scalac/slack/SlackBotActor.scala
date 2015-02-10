@@ -3,15 +3,12 @@ package io.scalac.slack
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{Actor, ActorLogging, Props}
-import akka.pattern._
 import akka.util.Timeout
 import io.scalac.slack.api._
 import io.scalac.slack.common._
 import io.scalac.slack.websockets.{WSActor, WebSocket}
 
-import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.language.postfixOps
 
 /**
  * Created on 20.01.15 23:59
@@ -55,11 +52,7 @@ class SlackBotActor extends Actor with ActorLogging {
 
       log.info(s"Connecting to host [$host] and resource [$resource]")
 
-      val connect = websocketClient ? WebSocket.Connect(host, 443, resource, withSsl = true)
-      // TODO (JZ): We don't need to block here.
-      // connect.mapTo[ExpectedType].map { result => sendMessageToMyself(result) }  
-      val result = Await.result(connect, timeout.duration)
-      log.info(result.toString)
+      websocketClient ! WebSocket.Connect(host, 443, resource, withSsl = true)
 
       import context.dispatcher
       context.system.scheduler.scheduleOnce(Duration.create(5, TimeUnit.SECONDS), self, RegisterModules)

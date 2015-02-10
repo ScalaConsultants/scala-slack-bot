@@ -12,6 +12,7 @@ object SlackBot {
   val system = ActorSystem("SlackBotSystem")
   val eventBus = new MessageEventBus
 
+  sys.addShutdownHook(shutdown())
 
   def main(args: Array[String]) {
     val logger = Logging(system, getClass)
@@ -33,6 +34,11 @@ object SlackBot {
         system.awaitTermination()
     }
 
+  }
+
+  def shutdown(): Unit = {
+    system.shutdown()
+    system.awaitTermination()
   }
 
 }
