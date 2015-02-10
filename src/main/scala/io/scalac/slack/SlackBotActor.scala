@@ -16,6 +16,7 @@ import scala.concurrent.duration._
 class SlackBotActor extends Actor with ActorLogging {
 
   import context.system
+  import context.dispatcher
 
   val api = context.actorOf(Props[ApiActor])
 
@@ -52,7 +53,6 @@ class SlackBotActor extends Actor with ActorLogging {
 
       websocketClient ! WebSocket.Connect(host, 443, resource, withSsl = true)
 
-      import context.dispatcher
       context.system.scheduler.scheduleOnce(Duration.create(5, TimeUnit.SECONDS), self, RegisterModules)
 
     case RegisterModules =>
