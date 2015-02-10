@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, Props}
 import akka.util.Timeout
 import io.scalac.slack.api._
 import io.scalac.slack.common._
-import io.scalac.slack.websockets.{WSActor, WebSocket}
+import io.scalac.slack.websockets.WebSocket
 
 import scala.concurrent.duration._
 
@@ -19,11 +19,9 @@ class SlackBotActor extends Actor with ActorLogging {
 
   val api = context.actorOf(Props[ApiActor])
 
-  //TODO (JZ) Just an idea: http://doc.akka.io/docs/akka/2.3.9/common/circuitbreaker.html
   var errors = 0
 
-  val websocketClient = context.actorOf(Props[WSActor], "ws-actor")
-  //register listener to listen to messages
+  val websocketClient = SlackBot.websocketClient
 
   override def receive: Receive = {
     case Start =>
@@ -31,7 +29,7 @@ class SlackBotActor extends Actor with ActorLogging {
       log.info("trying to connect to Slack's server...")
       api ! ApiTest()
     case Stop =>
-      shutdown()
+      SlackBot.shutdown()
     case Ok(_) =>
       log.info("connected successfully...")
       log.info("trying to auth")
@@ -61,24 +59,16 @@ class SlackBotActor extends Actor with ActorLogging {
       BotModules.registerModules(context, websocketClient)
 
     case MigrationInProgress =>
-      errors = 0
-      restart()
+      log.warning("MIGRATION IN PROGRESS, next try for 10 seconds")
+      system.scheduler.scheduleOnce(10.seconds, self, Start)
+    case se: SlackError if errors < 10 =>
+      errors += 1
+      log.error(s"connection error [$errors], repeat for 10 seconds")
+      log.error(s"SlackError occured [${se.toString}]")
+      system.scheduler.scheduleOnce(10.seconds, self, Start)
     case se: SlackError =>
       log.error(s"SlackError occured [${se.toString}]")
-      restart()
+      SlackBot.shutdown()
   }
 
-  def restart(): Unit = {
-    import context.dispatcher
-    errors += 1
-    // TODO (JZ) remove this `if` and use guards in case clauses above
-    if (errors < 10) {
-      log.error(s"connection error [$errors], repeat for 10 seconds")
-      system.scheduler.scheduleOnce(10.seconds, self, Start)
-    } else shutdown()
-  }
-
-  def shutdown(): Unit = {
-    context.system.shutdown()
-  }
 }
