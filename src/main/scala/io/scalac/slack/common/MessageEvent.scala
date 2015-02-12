@@ -19,6 +19,9 @@ case object Hello extends IncomingMessage
 
 case class DirectMessage(text: String) extends IncomingMessage
 
+//user issued command to bot
+case class Command(command: String, params: List[String]) extends IncomingMessage
+
 //last in the incoming messages hierarchy
 case class UndefinedMessage(body: String) extends IncomingMessage
 
