@@ -6,7 +6,7 @@ import spray.json._
 
 /**
  * Created on 08.02.15 23:36
- * Incomming message processor should parse incoming string
+ * Incoming message processor should parse incoming string
  * and change into proper protocol
  */
 class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor with ActorLogging {
@@ -21,6 +21,7 @@ class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor
         val incomingMessage: IncomingMessage = mType.messageType match {
           case "hello" => Hello
           case "pong" => Pong
+          case "message" => parseMessage(s.parseJson.asJsObject).getOrElse(UndefinedMessage(s))
           case _ =>
             UndefinedMessage(s)
         }
@@ -31,5 +32,17 @@ class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor
         eventBus.publish(UndefinedMessage(s))
       }
     case ignored => //nothing special
+  }
+
+  //TODO: move it up in the hierarchy
+  def parseMessage(jsonMessage: JsObject): Option[IncomingMessage] = {
+    jsonMessage.fields.get("text").map(_.compactPrint.replace("\"", "")).map(t =>
+      if(t.startsWith("$")) parseCommand(t) else DirectMessage(t)
+    )
+  }
+
+  def parseCommand(s: String): IncomingMessage = {
+    val data = s.replace("$", "").split(" ")
+    Command(data.head, data.tail.toList)
   }
 }

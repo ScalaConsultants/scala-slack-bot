@@ -1,4 +1,4 @@
-package io.scalac.slack.bots.digest
+package io.scalac.slack.bots
 
 import akka.actor.{Actor, ActorLogging}
 import io.scalac.slack.SlackBot
