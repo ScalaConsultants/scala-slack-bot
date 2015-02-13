@@ -14,4 +14,9 @@ class MessageCounterTest extends FunSuite with Matchers {
 
   }
 
+  test("message counter should be able to reset"){
+    MessageCounter.next should equal (4)
+    MessageCounter.reset()
+    MessageCounter.next should equal (1)
+  }
 }
