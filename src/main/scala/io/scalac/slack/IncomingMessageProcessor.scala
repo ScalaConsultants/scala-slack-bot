@@ -28,21 +28,9 @@ class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor
         eventBus.publish(incomingMessage)
       }
       catch {
-        case e : JsonParser.ParsingException =>
+        case e : Exception =>
         eventBus.publish(UndefinedMessage(s))
       }
     case ignored => //nothing special
-  }
-
-  //TODO: move it up in the hierarchy
-  def parseMessage(jsonMessage: JsObject): Option[IncomingMessage] = {
-    jsonMessage.fields.get("text").map(_.compactPrint.replace("\"", "")).map(t =>
-      if(t.startsWith("$")) parseCommand(t) else UndefinedMessage(t)
-    )
-  }
-
-  def parseCommand(s: String): IncomingMessage = {
-    val data = s.replace("$", "").split(" ")
-    Command(data.head, data.tail.toList, Pong)//TODO: Pong is temporary
   }
 }

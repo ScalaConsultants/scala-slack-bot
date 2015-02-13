@@ -26,8 +26,8 @@ case object Hello extends IncomingMessage
  */
 case class BaseMessage(text: String, channel: String, user: String, ts: DateTime, edited: Boolean = false) extends IncomingMessage
 
-//user issued command to bot  //TODO: change IncomingMessage into BaseMessage when parser will be ready
-case class Command(command: String, params: List[String], underlying: IncomingMessage) extends IncomingMessage
+//user issued command to bot
+case class Command(command: String, params: List[String], underlying: BaseMessage) extends IncomingMessage
 
 //last in the incoming messages hierarchy
 case class UndefinedMessage(body: String) extends IncomingMessage
