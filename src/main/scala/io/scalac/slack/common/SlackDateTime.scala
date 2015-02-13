@@ -33,4 +33,27 @@ object SlackDateTime {
   def uniqueTimeStamp(dt: DateTime = DateTime.now): String = {
     seconds(dt) + "." + f"${MessageCounter.next}%06d"
   }
+
+  def parseTimeStamp(ts: String): DateTime = {
+    try {
+      new DateTime(ts.toLong)
+    }catch {
+      case e: NumberFormatException =>
+        DateTime.now
+    }
+  }
+
+  def parseSeconds(seconds: String): DateTime = {
+   try {
+     val tsl = seconds.toLong * 1000
+     new DateTime(tsl)
+   }catch {
+     case e: NumberFormatException =>
+       DateTime.now
+   }
+  }
+
+  def parseUniqueTimestamp(uniqueTimeStamp: String): DateTime = {
+    parseSeconds(uniqueTimeStamp.split('.').head)
+  }
 }
