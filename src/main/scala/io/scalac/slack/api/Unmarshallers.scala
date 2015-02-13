@@ -9,7 +9,7 @@ import spray.json._
  */
 object Unmarshallers extends DefaultJsonProtocol {
 
-  implicit object DateTimeJsonFormat extends RootJsonFormat[DateTime] {
+  implicit object DateTimeJsonFormat extends JsonFormat[DateTime] {
     def write(dt: DateTime) = JsNumber(dt.getMillis)
 
     def read(value: JsValue) = {
@@ -25,7 +25,7 @@ object Unmarshallers extends DefaultJsonProtocol {
     }
   }
 
-  implicit object PresenceJsonFormat extends RootJsonFormat[Presence] {
+  implicit object PresenceJsonFormat extends JsonFormat[Presence] {
     def write(dt: Presence) = JsString(dt.getClass.toString.toLowerCase)
 
     def read(value: JsValue) = {
