@@ -13,12 +13,11 @@ class OutgoingMessageProcessor(wsActor: ActorRef) extends Actor with ActorLoggin
 
   override def receive: Receive = {
     case Ping =>
-      val pingString = s"""{"id": ${MessageCounter.next}, "type": "ping","time": ${SlackDateTime.timeStamp()}}"""
-      wsActor ! WebSocket.Send(pingString)
+      wsActor ! WebSocket.Send(Ping.toJson)
 
     case msg: OutboundMessage =>
-      val json = msg.toJson
-      wsActor ! WebSocket.Send(json)
+
+      wsActor ! WebSocket.Send(msg.toJson)
 
     case ignored => //nothing else
 
