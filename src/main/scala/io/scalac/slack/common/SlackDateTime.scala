@@ -37,20 +37,20 @@ object SlackDateTime {
   def parseTimeStamp(ts: String): DateTime = {
     try {
       new DateTime(ts.toLong)
-    }catch {
+    } catch {
       case e: NumberFormatException =>
         DateTime.now
     }
   }
 
   def parseSeconds(seconds: String): DateTime = {
-   try {
-     val tsl = seconds.toLong * 1000
-     new DateTime(tsl)
-   }catch {
-     case e: NumberFormatException =>
-       DateTime.now
-   }
+    try {
+      val tsl = seconds.toLong * 1000
+      new DateTime(tsl)
+    } catch {
+      case e: NumberFormatException =>
+        DateTime.now
+    }
   }
 
   def parseUniqueTimestamp(uniqueTimeStamp: String): DateTime = {

@@ -18,10 +18,10 @@ class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor
     case s: String =>
       try {
         val mType = s.parseJson.convertTo[MessageType]
-        val incomingMessage: IncomingMessage = mType.messageType match {
-          case "hello" => Hello
-          case "pong" => Pong
-          case "message" => parseMessage(s.parseJson.asJsObject).getOrElse(UndefinedMessage(s))
+        val incomingMessage: IncomingMessage = mType match {
+          case MessageType("hello", _) => Hello
+          case MessageType("pong", _) => Pong
+          case MessageType("message", None) => s.parseJson.convertTo[BaseMessage]
           case _ =>
             UndefinedMessage(s)
         }
