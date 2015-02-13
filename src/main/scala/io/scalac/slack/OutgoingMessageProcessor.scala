@@ -1,7 +1,7 @@
 package io.scalac.slack
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import io.scalac.slack.common.{MessageCounter, Outgoing, Ping, SlackDateTime}
+import io.scalac.slack.common._
 import io.scalac.slack.websockets.WebSocket
 
 /**
@@ -15,6 +15,10 @@ class OutgoingMessageProcessor(wsActor: ActorRef) extends Actor with ActorLoggin
     case Ping =>
       val pingString = s"""{"id": ${MessageCounter.next}, "type": "ping","time": ${SlackDateTime.timeStamp()}}"""
       wsActor ! WebSocket.Send(pingString)
+
+    case msg: OutboundMessage =>
+      val json = msg.toJson
+      wsActor ! WebSocket.Send(json)
 
     case ignored => //nothing else
 

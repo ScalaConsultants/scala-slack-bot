@@ -1,4 +1,4 @@
-package io.scalac.slack.bots.digest
+package io.scalac.slack.bots
 
 import java.util.concurrent.TimeUnit
 
