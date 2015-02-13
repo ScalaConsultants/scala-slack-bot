@@ -37,12 +37,12 @@ class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor
   //TODO: move it up in the hierarchy
   def parseMessage(jsonMessage: JsObject): Option[IncomingMessage] = {
     jsonMessage.fields.get("text").map(_.compactPrint.replace("\"", "")).map(t =>
-      if(t.startsWith("$")) parseCommand(t) else DirectMessage(t)
+      if(t.startsWith("$")) parseCommand(t) else UndefinedMessage(t)
     )
   }
 
   def parseCommand(s: String): IncomingMessage = {
     val data = s.replace("$", "").split(" ")
-    Command(data.head, data.tail.toList)
+    Command(data.head, data.tail.toList, Pong)//TODO: Pong is temporary
   }
 }

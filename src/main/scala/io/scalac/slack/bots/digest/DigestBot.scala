@@ -2,7 +2,7 @@ package io.scalac.slack.bots.digest
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import io.scalac.slack.bots.IncomingMessageListener
-import io.scalac.slack.common.{Command, DirectMessage, OutboundMessage, Ping}
+import io.scalac.slack.common._
 import io.scalac.slack.websockets.WebSocket
 
 class DigestBot extends IncomingMessageListener {
@@ -16,12 +16,12 @@ class DigestBot extends IncomingMessageListener {
   def get() = storage
 
   def receive = {
-    case Command("digest-put", link :: _) =>
+    case Command("digest-put", link :: _ , _) =>
       println(s"Got x= digest-put $link from Slack")
       put(link)
       publish(OutboundMessage("C03DN1GUJ", s"Link $link stored for Digest!"))
 
-    case Command("digest-get", _) =>
+    case Command("digest-get", _ , _) =>
       println(s"Got x= digest-get from Slack")
       publish(OutboundMessage("C03DN1GUJ", s"Digest contains: ${get().mkString(" ")}"))
 

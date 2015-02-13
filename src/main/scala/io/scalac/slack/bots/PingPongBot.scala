@@ -21,7 +21,7 @@ class PingPongBot extends IncomingMessageListener {
   }
 
   def sendPing() = {
-    context.system.scheduler.scheduleOnce(Duration.create(15, TimeUnit.SECONDS), self, Ping)
+    context.system.scheduler.scheduleOnce(Duration.create(30, TimeUnit.SECONDS), self, Ping)
   }
 
   @throws[Exception](classOf[Exception]) override
