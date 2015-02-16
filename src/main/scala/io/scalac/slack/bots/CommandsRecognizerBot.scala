@@ -1,5 +1,6 @@
 package io.scalac.slack.bots
 
+import io.scalac.slack.SlackBot
 import io.scalac.slack.common.{BaseMessage, Command}
 
 /**
@@ -10,16 +11,37 @@ class CommandsRecognizerBot extends IncomingMessageListener {
   val commandChar = '$'
 
   override def receive: Receive = {
+
     case bm @ BaseMessage(text, channel, user, dateTime, edited) =>
       //COMMAND links list with bot's nam jack can be called:
       // jack link list
+      // jack: link list
       // @jack link list
-      // !link list
-
-      if (text.trim.startsWith(commandChar.toString)) {
-        val tokenized = text.trim.drop(1).split("\\s")
-        publish(Command(tokenized.head, tokenized.tail.toList, bm))
+      // @jack: link list
+      // $link list
+      def changeIntoCommand(pattern: String): Boolean = {
+        if (text.trim.startsWith(pattern)) {
+          val tokenized = text.trim.drop(pattern.length).trim.split("\\s")
+          publish(Command(tokenized.head, tokenized.tail.toList, bm))
+          true
+        }
+        false
       }
+
+      //call by commad character
+      if (!changeIntoCommand(commandChar.toString))
+        SlackBot.botInfo match {
+          case Some(bi) =>
+            //call by name
+            changeIntoCommand(bi.name + ":") ||
+              changeIntoCommand(bi.name) ||
+              //call by ID
+              changeIntoCommand(s"<@${bi.id}>:") ||
+              changeIntoCommand(s"<@${bi.id}>")
+
+          case None => //nothing to do!
+
+        }
 
   }
 }

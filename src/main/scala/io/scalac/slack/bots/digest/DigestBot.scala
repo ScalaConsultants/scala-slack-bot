@@ -6,7 +6,7 @@ import io.scalac.slack.common._
 class DigestBot extends IncomingMessageListener {
 
 
-  println(s"Starting $this")
+  log.debug(s"Starting $this")
 
   var storage = List("link 1", "link 2")
 
@@ -16,12 +16,12 @@ class DigestBot extends IncomingMessageListener {
 
   def receive = {
     case Command("digest-put", link :: _, message) =>
-      println(s"Got x= digest-put $link from Slack")
+      log.debug(s"Got x= digest-put $link from Slack")
       put(link)
       publish(OutboundMessage(message.channel, s"Link $link stored for Digest!"))
 
     case Command("digest-get", _, message) =>
-      println(s"Got x= digest-get from Slack")
+      log.debug(s"Got x= digest-get from Slack")
       publish(OutboundMessage(message.channel, s"Digest contains: ${get().mkString(" ")}"))
   }
 }

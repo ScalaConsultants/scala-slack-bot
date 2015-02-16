@@ -58,6 +58,7 @@ class ApiActor extends Actor with ActorLogging {
         case Success(res) =>
           if (res.ok)
             send ! RtmData(res.url)
+            send ! res.self
         case Failure(ex) =>
           send ! ex
       }
