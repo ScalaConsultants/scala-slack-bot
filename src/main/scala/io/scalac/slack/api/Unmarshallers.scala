@@ -49,5 +49,6 @@ object Unmarshallers extends DefaultJsonProtocol {
   implicit val channelInfoFormat = jsonFormat3(ChannelInfo)
   implicit val channelFormat = jsonFormat(Channel, "name", "creator", "is_member", "is_channel", "id", "is_general", "is_archived", "created", "purpose", "topic", "unread_count", "last_read", "members")
   implicit val userFormat = jsonFormat(SlackUser, "id", "name", "deleted", "is_admin", "is_owner", "is_primary_owner", "is_restricted", "is_ultra_restricted", "has_files", "is_bot", "presence")
-  implicit val rtmStartResponseFormat = jsonFormat(RtmStartResponse, "ok", "url", "users", "channels")
+  implicit val botInfoFormat = jsonFormat(BotInfo, "id", "name")
+  implicit val rtmStartResponseFormat = jsonFormat(RtmStartResponse, "ok", "url", "users", "channels", "self")
 }
