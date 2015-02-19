@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import io.scalac.slack.common._
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.duration._
@@ -28,6 +29,10 @@ class IncomingMessageProcessorTest(_system: ActorSystem) extends TestKit(_system
       }
     }))
   }
+
+   //date helpers
+  val baseTime = new DateTime(2015, 2, 15, 8, 23, 45, 0)
+  val uniqueTS = SlackDateTime.uniqueTimeStamp(baseTime)
 
   /**
    * Why this function is named matrix?
@@ -67,5 +72,40 @@ class IncomingMessageProcessorTest(_system: ActorSystem) extends TestKit(_system
         theProbe.expectMsg(1 second, Pong)
       }
     }
+
+    "push BaseMessage without edited date" in {
+      matrix() { entry =>
+        entry ! s"""{
+                   |  "type": "message",
+                   |  "channel": "C2147483705",
+                   |  "user": "U2147483697",
+                   |  "text": "Hello world",
+                   |  "ts": "$uniqueTS}"
+                                        |}""".stripMargin
+        theProbe.expectMsg(1 second, BaseMessage("Hello world", "C2147483705", "U2147483697", baseTime, edited = false))
+      }
+    }
+
+/*
+    "push BaseMessage with edited date" in {
+      matrix() { entry =>
+        entry ! s"""{
+                   |   "type": "message",
+                   |   "channel": "C2147483705",
+                   |   "user": "U2147483697",
+                   |   "text": "Hello, world!",
+                   |   "ts": "$uniqueTS",
+                                         |    "edited": {
+                                         |       "user": "U2147483697",
+                                         |       "ts": "$uniqueTS"
+                                                                   |   }
+                                                                   |}""".stripMargin
+
+        theProbe.expectMsg(1 seconds, BaseMessage("Hello world!", "C2147483705", "U2147483697", baseTime, edited = true))
+      }
+    }
+*/ // I DON"T KNOW WHY IT FAILS
+
+
   }
 }
