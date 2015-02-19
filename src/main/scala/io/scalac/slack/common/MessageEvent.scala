@@ -16,11 +16,18 @@ case object Pong extends IncomingMessage
 
 case object Hello extends IncomingMessage
 
-
-case class DirectMessage(text: String) extends IncomingMessage
+/**
+ * BaseMessage is on the top of messages hierarchy, there is 21 subtypes of BaseMessage and each of them
+ * should has its own model
+ * @param text message text, written by user
+ * @param channel ID of channel
+ * @param user ID of message author
+ * @param ts unique timestamp
+ */
+case class BaseMessage(text: String, channel: String, user: String, ts: DateTime, edited: Boolean = false) extends IncomingMessage
 
 //user issued command to bot
-case class Command(command: String, params: List[String]) extends IncomingMessage
+case class Command(command: String, params: List[String], underlying: BaseMessage) extends IncomingMessage
 
 //last in the incoming messages hierarchy
 case class UndefinedMessage(body: String) extends IncomingMessage

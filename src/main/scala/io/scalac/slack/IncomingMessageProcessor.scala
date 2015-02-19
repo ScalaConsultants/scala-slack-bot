@@ -18,31 +18,19 @@ class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor
     case s: String =>
       try {
         val mType = s.parseJson.convertTo[MessageType]
-        val incomingMessage: IncomingMessage = mType.messageType match {
-          case "hello" => Hello
-          case "pong" => Pong
-          case "message" => parseMessage(s.parseJson.asJsObject).getOrElse(UndefinedMessage(s))
+        val incomingMessage: IncomingMessage = mType match {
+          case MessageType("hello", _) => Hello
+          case MessageType("pong", _) => Pong
+          case MessageType("message", None) => s.parseJson.convertTo[BaseMessage]
           case _ =>
             UndefinedMessage(s)
         }
         eventBus.publish(incomingMessage)
       }
       catch {
-        case e : JsonParser.ParsingException =>
+        case e : Exception =>
         eventBus.publish(UndefinedMessage(s))
       }
     case ignored => //nothing special
-  }
-
-  //TODO: move it up in the hierarchy
-  def parseMessage(jsonMessage: JsObject): Option[IncomingMessage] = {
-    jsonMessage.fields.get("text").map(_.compactPrint.replace("\"", "")).map(t =>
-      if(t.startsWith("$")) parseCommand(t) else DirectMessage(t)
-    )
-  }
-
-  def parseCommand(s: String): IncomingMessage = {
-    val data = s.replace("$", "").split(" ")
-    Command(data.head, data.tail.toList)
   }
 }

@@ -15,8 +15,7 @@ import scala.concurrent.duration._
  */
 class SlackBotActor extends Actor with ActorLogging {
 
-  import context.system
-  import context.dispatcher
+  import context.{dispatcher, system}
 
   val api = context.actorOf(Props[ApiActor])
 
@@ -55,9 +54,10 @@ class SlackBotActor extends Actor with ActorLogging {
 
       context.system.scheduler.scheduleOnce(Duration.create(5, TimeUnit.SECONDS), self, RegisterModules)
 
+    case bi @ BotInfo(_, _) =>
+      SlackBot.botInfo = Some(bi)
     case RegisterModules =>
       BotModules.registerModules(context, websocketClient)
-
     case MigrationInProgress =>
       log.warning("MIGRATION IN PROGRESS, next try for 10 seconds")
       system.scheduler.scheduleOnce(10.seconds, self, Start)
