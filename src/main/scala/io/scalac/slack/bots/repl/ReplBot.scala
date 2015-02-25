@@ -16,31 +16,34 @@ class ReplBot(scalaLibraryPath: String) extends IncomingMessageListener {
 
   log.debug(s"Starting $this")
 
-  lazy val interpreter = new REPL(scalaLibraryPath)
+  lazy val interpreter = new Repl(scalaLibraryPath)
   
   def receive = {
     case Command("repl", code, message) =>
       log.debug(s"Got x= repl $code from Slack")
       val r = interpreter.run(code.mkString(" "))
       publish(OutboundMessage(message.channel, r))
+
+    case Command("repl-reset", _, message) =>
+      log.debug(s"Got x= repl-reset from Slack")
+      interpreter.reset()
+      publish(OutboundMessage(message.channel, "Repl reset"))
   }
 }
 
-class REPL(scalaLibraryPath: String) {
+class Repl(scalaLibraryPath: String) {
+  private val writer = new java.io.StringWriter()
+  private val s = new Settings()
+  s.bootclasspath.append(scalaLibraryPath)
+  s.classpath.append(scalaLibraryPath)
 
-//  lazy val scalaLibraryPath = "/home/jfk/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.5.jar"
+  private def repl = new IMain(s, new PrintWriter(writer))
 
-  def run(code: String) = {
-    val writer = new java.io.StringWriter()
-    val s = new Settings()
-    s.bootclasspath.append(scalaLibraryPath)
-    s.classpath.append(scalaLibraryPath)
-
-    def repl = new IMain(s, new PrintWriter(writer))
+  def run(code: String): String = {
+    writer.getBuffer.setLength(0)
     repl.interpret(code)
-    repl.close()
-
-    println("Done? YES! " + writer.toString)
     writer.toString.replaceAll("\n", "")
   }
+
+  def reset() = repl.reset()
 }
