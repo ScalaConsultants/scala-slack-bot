@@ -47,10 +47,26 @@ case object Ping extends OutgoingMessage {
 case class OutboundMessage(channel: String, text: String) extends OutgoingMessage {
   override def toJson =
     s"""{
+      |"id": ${MessageCounter.next},
+      |"type": "message",
+      |"channel": "$channel",
+      |"text": "$text"
+      |}""".stripMargin
+}
+
+case class RichOutboundMessage(channel: String, text: String) extends OutgoingMessage {
+  override def toJson =
+    s"""{
       | "id": ${MessageCounter.next},
       | "type": "message",
       | "channel": "$channel",
-      | "text": "$text"
+      | "text": "$text"}{
+      |    "fallback": "New ticket from Andrea Lee - Ticket #1943: Can't rest my password - https://groove.hq/path/to/ticket/1943",
+      |    "pretext": "New ticket from Andrea Lee",
+      |    "title": "Ticket #1943: Can't reset my password",
+      |    "title_link": "https://groove.hq/path/to/ticket/1943",
+      |    "text": "Help! I tried to reset my password but nothing happened!",
+      |    "color": "#7CD197"
       |}""".stripMargin
 }
 
