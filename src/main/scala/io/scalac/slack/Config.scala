@@ -16,4 +16,9 @@ object Config {
   def baseUrl(endpoint: String) = config.getString("api.base.url") + endpoint
 
   def scalaLibraryPath = config.getString("scalaLibraryPath")
+
+  def consumerKey: String = config.getString("twitter.consumerKey")
+  def consumerKeySecret: String  = config.getString("twitter.consumerKeySecret")
+  def accessToken: String  = config.getString("twitter.accessToken")
+  def accessTokenSecret: String  = config.getString("twitter.accessTokenSecret")
 }
