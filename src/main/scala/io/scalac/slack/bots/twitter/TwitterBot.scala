@@ -10,12 +10,19 @@ class TwitterBot(twitter: Twitter) extends IncomingMessageListener {
 
   log.debug(s"Starting $this")
 
+  val peopleToInform = " @patryk @mat "
+
+  def saveToDb(msg: String) = {
+    //TODO: needs DB
+  }
 
   def receive = {
-    case Command("twitter-post", twitText :: _, message) =>
-      log.debug(s"Got x= twitter-post $twitText from Slack")
-      twitter.post(twitText)
-      publish(OutboundMessage(message.channel, s"Link $twitText stored for Digest!"))
+    case Command("twitter-post", twitText, message) =>
+      val msg = twitText.mkString(" ")
+      log.debug(s"Got x= twitter-post $msg from Slack")
+      twitter.post(msg)
+      saveToDb(msg)
+      publish(OutboundMessage(message.channel, s"$msg has been posted to Twitter! $peopleToInform"))
   }
 }
 
