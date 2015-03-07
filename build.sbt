@@ -6,6 +6,13 @@ scalaVersion := "2.11.5"
 
 organization := "io.scalac"
 
+resolvers ++= Seq(
+  // to get Datomisca
+  "Pellucid Bintray"  at "http://dl.bintray.com/content/pellucid/maven",
+  // to get Datomic free (for pro, you must put in your own repo or local)
+  "clojars" at "https://clojars.org/repo"
+)
+
 libraryDependencies ++= {
   val akkaVersion = "2.3.9"
   Seq(
@@ -26,7 +33,9 @@ libraryDependencies ++= {
     "org.scala-lang.modules" %% "scala-xml" % "1.0.2",
     "org.scala-lang" % "scala-compiler" % "2.10.2",
     "org.scala-lang" % "jline" % "2.10.2",
-    "org.twitter4j" % "twitter4j-core" % "4.0.0"
+    "org.twitter4j" % "twitter4j-core" % "4.0.0",
+    "com.pellucid" %% "datomisca" % "0.7-alpha-11",
+    "com.datomic" % "datomic-free" % "0.9.4724"
   )
 }
 

@@ -5,7 +5,10 @@ import io.scalac.slack.common.{OutboundMessage, Command}
 import twitter4j.TwitterFactory
 import twitter4j.conf.ConfigurationBuilder
 
-
+/**
+ * Authors:
+ *  Patryk Jażdżewski
+ */
 class TwitterBot(twitter: Twitter) extends IncomingMessageListener {
 
   log.debug(s"Starting $this")
