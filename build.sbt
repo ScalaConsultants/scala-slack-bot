@@ -25,7 +25,8 @@ libraryDependencies ++= {
     "org.slf4j" % "slf4j-log4j12" % "1.7.5",
     "org.scala-lang.modules" %% "scala-xml" % "1.0.2",
     "org.scala-lang" % "scala-compiler" % "2.10.2",
-    "org.scala-lang" % "jline" % "2.10.2"
+    "org.scala-lang" % "jline" % "2.10.2",
+    "org.twitter4j" % "twitter4j-core" % "4.0.0"
   )
 }
 
