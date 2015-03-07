@@ -1,8 +1,11 @@
 package io.scalac.slack.common
 
 import akka.actor.{ActorContext, ActorRef, Props}
+import io.scalac.slack.Config
 import io.scalac.slack.bots.digest.DigestBot
-import io.scalac.slack.bots._
+import io.scalac.slack.bots.repl.ReplBot
+import io.scalac.slack.bots.twitter.{Twitter, TwitterBot}
+import io.scalac.slack.bots.{HelloBot, CommandsRecognizerBot, LoggingBot, PingPongBot}
 
 object BotModules {
 
@@ -13,5 +16,12 @@ object BotModules {
     val commandProcessor = context.actorOf(Props[CommandsRecognizerBot])
     val helloBot = context.actorOf(Props[HelloBot])
     val richBot = context.actorOf(Props[RichMessageTest])
+    val replBot =  context.actorOf(Props(classOf[ReplBot], Config.scalaLibraryPath))
+    val twitterBot =  context.actorOf(
+      Props(classOf[TwitterBot],
+      new Twitter(Config.consumerKey,
+        Config.consumerKeySecret,
+        Config.accessToken,
+        Config.accessTokenSecret)))
   }
 }
