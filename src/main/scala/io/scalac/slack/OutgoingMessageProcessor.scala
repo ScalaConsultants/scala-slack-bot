@@ -18,9 +18,6 @@ class OutgoingMessageProcessor(wsActor: ActorRef) extends Actor with ActorLoggin
     case msg: OutboundMessage =>
       wsActor ! WebSocket.Send(msg.toJson)
 
-    case msg: RichOutboundMessage =>
-      wsActor ! WebSocket.Send(msg.toJson)
-
     case ignored => //nothing else
 
   }

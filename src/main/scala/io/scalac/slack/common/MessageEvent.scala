@@ -54,21 +54,25 @@ case class OutboundMessage(channel: String, text: String) extends OutgoingMessag
       |}""".stripMargin
 }
 
-case class RichOutboundMessage(channel: String, text: String) extends OutgoingMessage {
-  override def toJson =
-    s"""{
-      | "id": ${MessageCounter.next},
-      | "type": "message",
-      | "channel": "$channel",
-      | "text": "$text"}{
-      |    "fallback": "New ticket from Andrea Lee - Ticket #1943: Can't rest my password - https://groove.hq/path/to/ticket/1943",
-      |    "pretext": "New ticket from Andrea Lee",
-      |    "title": "Ticket #1943: Can't reset my password",
-      |    "title_link": "https://groove.hq/path/to/ticket/1943",
-      |    "text": "Help! I tried to reset my password but nothing happened!",
-      |    "color": "#7CD197"
-      |}""".stripMargin
+sealed trait RichMessageElement
+
+case class Text(value: String) extends RichMessageElement
+
+case class PreText(value: String) extends RichMessageElement
+
+case class Field(title: String, value: String, short: Boolean = false) extends RichMessageElement
+
+case class Title(value: String, url: Option[String] = None) extends RichMessageElement
+
+case class Color(value: String) extends RichMessageElement
+
+object Color {
+  val good = Color("good")
+  val warning = Color("warning")
+  val danger = Color("danger")
 }
+
+case class RichOutboundMessage(channel: String, elements: List[RichMessageElement]) extends MessageEvent
 
 
 /**
