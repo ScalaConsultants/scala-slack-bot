@@ -12,9 +12,8 @@ class OutgoingRichMessageProcessor(apiActor: ActorRef) extends Actor with ActorL
   override def receive: Receive = {
 
     case msg: RichOutboundMessage =>
-      println("RICH MESSAGE ENCOUNTERED!!!")
-      println(msg)
-      apiActor ! ""
+      if (msg.elements.nonEmpty)
+        apiActor ! msg //trasport through WebAPI until RTM support begin
 
     case ignored => //nothing else
 

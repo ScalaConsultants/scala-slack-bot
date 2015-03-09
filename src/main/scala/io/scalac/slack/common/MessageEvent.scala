@@ -2,6 +2,8 @@ package io.scalac.slack.common
 
 import org.joda.time.DateTime
 
+import scala.annotation.tailrec
+
 /**
  * Created on 08.02.15 22:04
  */
@@ -73,6 +75,42 @@ object Color {
 }
 
 case class RichOutboundMessage(channel: String, elements: List[RichMessageElement]) extends MessageEvent
+
+case class Attachment(text: Option[String] = None, preText: Option[String] = None, fields: Option[List[Field]] = None, title: Option[String] = None, titleURL: Option[String] = None, color: Option[String] = None) {
+  def isValid = text.isDefined || preText.isDefined || title.isDefined || (fields.isDefined && fields.get.nonEmpty)
+
+  def addElement(element: RichMessageElement): Attachment = {
+    element match {
+      case Color(value) if value.nonEmpty =>
+        copy(color = Some(value))
+      case Title(value, url) if value.nonEmpty =>
+        copy(title = Some(value), titleURL = url)
+      case PreText(value) if value.nonEmpty =>
+        copy(preText = Some(value))
+      case Text(value) if value.nonEmpty =>
+        copy(text = Some(value))
+      case f: Field => copy(fields = Some(this.fields.getOrElse(List.empty[Field]) :+ f))
+      case _ => this
+    }
+  }
+}
+
+object Attachment {
+
+
+  def apply(elements: List[RichMessageElement]): Attachment = {
+
+    @tailrec
+    def loopBuild(elems: List[RichMessageElement], acc: Attachment): Attachment = {
+      elems match {
+        case Nil => acc
+        case head :: tail => loopBuild(tail, acc.addElement(head))
+      }
+    }
+    loopBuild(elements, Attachment())
+  }
+
+}
 
 
 /**
