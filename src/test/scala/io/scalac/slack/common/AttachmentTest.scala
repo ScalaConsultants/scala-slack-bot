@@ -1,7 +1,8 @@
 package io.scalac.slack.common
 
 import org.scalatest.{Matchers, FunSuite}
-
+import spray.json._
+import JsonProtocols._
 /**
  * Created on 09.03.15 10:35
  */
@@ -55,11 +56,32 @@ class AttachmentTest extends FunSuite with Matchers {
   }
 
   test("parse some fields and text"){
-    val elems = List[RichMessageElement](Text("sometext"), Field("title 1", "content 1", short = false), Field("title 2", "content 2", true))
+    val elems = List[RichMessageElement](Text("sometext"), Field("title 1", "content 1", short = false), Field("title 2", "content 2", short = true))
     val att1 = Attachment(elems)
-    val att = Attachment(text = Some("sometext"), fields = Some(List(Field("title 1", "content 1", short = false), Field("title 2", "content 2", true))))
+    val att = Attachment(text = Some("sometext"), fields = Some(List(Field("title 1", "content 1", short = false), Field("title 2", "content 2", short = true))))
     att should equal (att1)
     att should be ('valid)
+  }
+
+  test("attachment to JSON"){
+    val elems = List[RichMessageElement](Text("sometext"), Field("title 1", "content 1", short = false), Field("title 2", "content 2", short = true), Color.danger)
+    val att1 = Attachment(elems)
+    //language=JSON
+    val json = """{"fallback":"wrong formatted message","text":"sometext","fields":[{"title":"title 1","value":"content 1","short":false},{"title":"title 2","value":"content 2","short":true}],"color":"danger"}"""
+
+    json should equal (att1.toJson.toString())
+
+  }
+
+  test("field serializer to JSON"){
+
+    import io.scalac.slack.common.JsonProtocols._
+    val field = Field("field title", "field value", short = false)
+
+    val fieldJson = field.toJson.toString()
+    //language=JSON
+    val json = """{"title":"field title","value":"field value","short":false}"""
+    json should equal (fieldJson)
   }
 
 }
