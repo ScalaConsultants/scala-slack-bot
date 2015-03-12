@@ -5,7 +5,7 @@ import io.scalac.slack.Config
 import io.scalac.slack.bots.digest.DigestBot
 import io.scalac.slack.bots.repl.ReplBot
 import io.scalac.slack.bots.twitter.{Twitter, TwitterBot}
-import io.scalac.slack.bots.{HelloBot, CommandsRecognizerBot, LoggingBot, PingPongBot}
+import io.scalac.slack.bots._
 
 object BotModules {
 
@@ -22,5 +22,6 @@ object BotModules {
         Config.consumerKeySecret,
         Config.accessToken,
         Config.accessTokenSecret)))
+    val tagBot = context.actorOf(Props[TagsBot])
   }
 }
