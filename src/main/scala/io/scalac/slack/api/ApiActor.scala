@@ -68,8 +68,8 @@ class ApiActor extends Actor with ActorLogging {
     case msg: RichOutboundMessage =>
       log.debug("chat.postMessage requested")
 
-      val attJson = Attachment(msg.elements).toJson
-      val params = Map("token" -> Config.apiKey.key, "channel" -> msg.channel, "as_user" -> "true", "attachments" -> s"""[${attJson.toString()}]""")
+      val attachments = msg.elements.filter(_.isValid).map(_.toJson).mkString("[", ",", "]")
+      val params = Map("token" -> Config.apiKey.key, "channel" -> msg.channel, "as_user" -> "true", "attachments" -> attachments)
 
       SlackApiClient.post[ChatPostMessageResponse]("chat.postMessage", params) onComplete {
         case Success(res) =>

@@ -74,7 +74,7 @@ object Color {
   val danger = Color("danger")
 }
 
-case class RichOutboundMessage(channel: String, elements: List[RichMessageElement]) extends MessageEvent
+case class RichOutboundMessage(channel: String, elements: List[Attachment]) extends MessageEvent
 
 case class Attachment(text: Option[String] = None, pretext: Option[String] = None, fields: Option[List[Field]] = None, title: Option[String] = None, title_link: Option[String] = None, color: Option[String] = None) {
   def isValid = text.isDefined || pretext.isDefined || title.isDefined || (fields.isDefined && fields.get.nonEmpty)
@@ -98,7 +98,7 @@ case class Attachment(text: Option[String] = None, pretext: Option[String] = Non
 object Attachment {
 
 
-  def apply(elements: List[RichMessageElement]): Attachment = {
+  def apply(elements: RichMessageElement*): Attachment = {
 
     @tailrec
     def loopBuild(elems: List[RichMessageElement], acc: Attachment): Attachment = {
@@ -107,7 +107,7 @@ object Attachment {
         case head :: tail => loopBuild(tail, acc.addElement(head))
       }
     }
-    loopBuild(elements, Attachment())
+    loopBuild(elements.toList, new Attachment())
   }
 
 }
