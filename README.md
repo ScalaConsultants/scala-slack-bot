@@ -42,7 +42,7 @@ If you want to send basic, plain message use `OutboundMessage` case class. It ha
 
 If you add colors or line breaks, you can send rich message. To do so, you need to send message to channel and add one or more attachments:
 
-![Rich message example](https://raw.githubusercontent.com/ScalaConsultants/scala-slack-bot/master/richmessage.png)
+![Rich message example](../master/richmessage.png?raw=true)
 
 on this image you see Rich message with 3 attachment, each attachment has its own color decorator, default is grey what is seen in second attachment.
 
