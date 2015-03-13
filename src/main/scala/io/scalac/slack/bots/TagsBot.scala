@@ -1,6 +1,6 @@
 package io.scalac.slack.bots
 
-import io.scalac.slack.common.{SlackbotDatabase, OutboundMessage, Command}
+import io.scalac.slack.common.{BaseMessage, SlackbotDatabase, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.meta._
@@ -11,14 +11,16 @@ class TagsBot extends IncomingMessageListener  {
   log.debug(s"Starting $this")
 
   def receive = {
-    case Command("tag", wordList, message) =>
-      val fullMsg = wordList.mkString(" ")
-      val tags = wordList.filter(x => x.startsWith("[") && x.endsWith("]")).map(_.toLowerCase())
-      log.debug(s"Got x= tag $fullMsg from Slack with tags $tags")
-      tags.map(TagsRepository.insert(_, fullMsg, message.user))
-      publish(OutboundMessage(message.channel, s"$fullMsg has been tagged with $tags"))
+    case BaseMessage(fullMsg, channel, user, _, _) if fullMsg.contains("[") && fullMsg.contains("]") && !fullMsg.contains("$") =>
+      val wordList = fullMsg.split(" ")
+      val tags = wordList.filter(x => x.startsWith("[") && x.endsWith("]")).map(_.toLowerCase().replaceAll("\\[", "").replaceAll("\\]", ""))
 
-    case Command("tag-list", tag :: _, message) =>
+      log.debug(s"Got x= tag $fullMsg from Slack with tags ${tags.mkString(" ")}")
+
+      tags.map(TagsRepository.insert(_, fullMsg, user))
+      publish(OutboundMessage(channel, s"$fullMsg has been tagged with ${tags.mkString(" ")}"))
+
+    case Command("tag", tag :: _, message) =>
       log.debug(s"Got x= tag-list $tag from Slack")
       val data = TagsRepository.find(tag).getOrElse(List())
       publish(OutboundMessage(message.channel, s"$tag contains ${data.mkString(" ; ")}"))
