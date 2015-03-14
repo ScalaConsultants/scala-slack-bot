@@ -11,14 +11,15 @@ class TagsBot(tagsRepo: TagsRepository) extends IncomingMessageListener  {
   log.debug(s"Starting $this")
 
   def receive = {
-    case BaseMessage(fullMsg, channel, user, _, _) if fullMsg.contains("[") && fullMsg.contains("]") && !fullMsg.contains("$") =>
+    case BaseMessage(fullMsg, channel, user, _, _) if fullMsg.contains("[") && fullMsg.contains("]") =>
       val wordList = fullMsg.split(" ")
       val tags = wordList.filter(x => x.startsWith("[") && x.endsWith("]")).map(_.toLowerCase().replaceAll("\\[", "").replaceAll("\\]", ""))
 
       log.debug(s"Got x= tag $fullMsg from Slack with tags ${tags.mkString(" ")}")
 
       tags.map(tagsRepo.insert(_, fullMsg, user))
-      publish(OutboundMessage(channel, s"$fullMsg has been tagged with ${tags.mkString(" ")}"))
+      if(tags.length > 0)
+        publish(OutboundMessage(channel, s"$fullMsg has been tagged with ${tags.mkString(" ")}"))
 
     case Command("tag", tag :: _, message) =>
       log.debug(s"Got x= tag-list $tag from Slack")
