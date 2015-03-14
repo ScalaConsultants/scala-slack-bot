@@ -22,6 +22,6 @@ object BotModules {
         Config.consumerKeySecret,
         Config.accessToken,
         Config.accessTokenSecret)))
-    val tagBot = context.actorOf(Props[TagsBot])
+    val tagBot = context.actorOf(Props(classOf[TagsBot], new TagsRepository()))
   }
 }
