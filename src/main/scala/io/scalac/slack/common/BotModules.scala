@@ -4,7 +4,7 @@ import akka.actor.{ActorContext, ActorRef, Props}
 import io.scalac.slack.Config
 import io.scalac.slack.bots.digest.{DigestRepository, DigestBot}
 import io.scalac.slack.bots.repl.ReplBot
-import io.scalac.slack.bots.twitter.{Twitter, TwitterBot}
+import io.scalac.slack.bots.twitter.{TwitterRepository, TwitterMessenger, TwitterBot}
 import io.scalac.slack.bots._
 
 object BotModules {
@@ -18,10 +18,12 @@ object BotModules {
     val replBot =  context.actorOf(Props(classOf[ReplBot], Config.scalaLibraryPath))
     val twitterBot =  context.actorOf(
       Props(classOf[TwitterBot],
-      new Twitter(Config.consumerKey,
-        Config.consumerKeySecret,
-        Config.accessToken,
-        Config.accessTokenSecret)))
+        new TwitterMessenger(Config.consumerKey,
+          Config.consumerKeySecret,
+          Config.accessToken,
+          Config.accessTokenSecret),
+        new TwitterRepository())
+    )
     val tagBot = context.actorOf(Props(classOf[TagsBot], new TagsRepository()))
   }
 }

@@ -1,11 +1,10 @@
 package io.scalac.slack.bots.digest
 
-import io.scalac.slack.common.{AbstractRepository, SlackbotDatabase, Command, OutboundMessage}
+import io.scalac.slack.common.{AbstractRepository, Command, OutboundMessage}
 import io.scalac.slack.bots.IncomingMessageListener
 import org.joda.time.{DateTimeZone, DateTime}
 
 import scala.slick.driver.H2Driver.simple._
-import scala.slick.jdbc.meta._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
 class DigestBot(linkRepo: DigestRepository) extends IncomingMessageListener {
