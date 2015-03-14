@@ -1,6 +1,6 @@
 package io.scalac.slack.bots
 
-import io.scalac.slack.common.{BaseMessage, SlackbotDatabase, OutboundMessage, Command}
+import io.scalac.slack.common._
 import org.joda.time.{DateTimeZone, DateTime}
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.meta._
@@ -27,13 +27,12 @@ class TagsBot(tagsRepo: TagsRepository) extends IncomingMessageListener  {
   }
 }
 
-class TagsRepository() {
+class TagsRepository() extends AbstractRepository {
 
   /// definitions
+  override val bucket = "TagsBot"
 
-  private val db = SlackbotDatabase.db
-
-  private class DataTag(tag: Tag) extends Table[(Long, String)](tag, "DataTag") {
+  private class DataTag(tag: Tag) extends Table[(Long, String)](tag, s"${bucket}_DataTag") {
     def id = column[Long]("DataTagId", O.PrimaryKey, O.AutoInc)
     def name = column[String]("Name")
     def * = (id, name)
@@ -41,7 +40,7 @@ class TagsRepository() {
   private val dataTags = TableQuery[DataTag]
   private val dataTagsInsert = dataTags.map(_.name).returning(dataTags.map(_.id))
 
-  private class TaggedEntry(tag: Tag) extends Table[(Long, Long, String, String, Long)](tag, "TaggedEntry") {
+  private class TaggedEntry(tag: Tag) extends Table[(Long, Long, String, String, Long)](tag, s"${bucket}_TaggedEntry") {
     def id = column[Long]("TaggedEntryId", O.PrimaryKey, O.AutoInc)
     def tagId = column[Long]("TagId")
     def text = column[String]("Text")
@@ -54,7 +53,8 @@ class TagsRepository() {
   private val entries = TableQuery[TaggedEntry]
 
   db.withDynSession {
-    if(MTable.getTables.list.length == 0) (dataTags.ddl ++ entries.ddl).create
+    if(migrationNeeded())
+      (dataTags.ddl ++ entries.ddl).create
   }
 
   //public methods
