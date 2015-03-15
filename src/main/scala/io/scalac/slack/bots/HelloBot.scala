@@ -19,12 +19,9 @@ class HelloBot extends IncomingMessageListener {
 
     case BaseMessage(text, channel, user, _, _) =>
       SlackBot.botInfo match {
-        case Some(bi) =>
-          if (text.startsWith("hi ") && (text.contains(bi.id) || text.contains(bi.name))) {
+        case Some(bi) if (text.startsWith("hi ") || text.startsWith("hello ")) && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id =>
+
             publish(OutboundMessage(channel, s"hello <@$user>, $welcome"))
-          } else if (text.startsWith("hello ") && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id) {
-            publish(OutboundMessage(channel, s"hello <@$user>, $welcome"))
-          }
 
         case None => //nothing to do!
 
