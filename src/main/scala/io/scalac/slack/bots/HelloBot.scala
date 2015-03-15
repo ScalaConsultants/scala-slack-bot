@@ -15,13 +15,15 @@ class HelloBot extends IncomingMessageListener {
 
   override def receive: Receive = {
     case Command("hello", _, message) =>
-      publish(OutboundMessage(message.channel, s"hello <@${message.user}>, $welcome"))
+      publish(OutboundMessage(message.channel, s"hello <@${message.user}>,\\n $welcome"))
 
     case BaseMessage(text, channel, user, _, _) =>
       SlackBot.botInfo match {
         case Some(bi) if (text.startsWith("hi ") || text.startsWith("hello ")) && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id =>
 
-            publish(OutboundMessage(channel, s"hello <@$user>, $welcome"))
+          //multiline message example
+          // new line sign `\n` should be double escaped, slash twice.
+            publish(OutboundMessage(channel, s"""hello <@$user>,\\n $welcome"""))
 
         case None => //nothing to do!
 
