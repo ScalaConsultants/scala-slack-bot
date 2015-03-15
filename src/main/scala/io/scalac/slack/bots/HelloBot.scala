@@ -9,7 +9,9 @@ import scala.util.Random
  * Created on 16.02.15 21:32
  */
 class HelloBot extends IncomingMessageListener {
-  val welcomes = List("what's up?", "how's going?" /*, "ready for work?"*/ , "nice to see you")
+  log.debug(s"Starting $this")
+
+  val welcomes = List("what's up?", "how's going?" , "ready for work?" , "nice to see you")
 
   def welcome = Random.shuffle(welcomes).head
 

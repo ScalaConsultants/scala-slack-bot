@@ -40,11 +40,11 @@ If you want to send basic, plain message use `OutboundMessage` case class. It ha
 
     publish(OutboundMessage(channel, s"hello <@$user>, welcome"))
 
-If you add colors or line breaks, you can send rich message. To do so, you need to send message to channel and add one or more attachments:
+If you add colors or line breaks, you can send enriched message. To do so, you need to send message to channel with one or more attachments:
 
 ![Rich message example](../master/richmessage.png?raw=true)
 
-on this image you see Rich message with 3 attachment, each attachment has its own color decorator, default is grey what is seen in second attachment.
+on this image you see RichMessage with 3 attachments, each of these attachments has its own color. If don't define color explicitly displayed is grey, what is seen in second attachment.
 
 Attachment can be build from:
 - **PreText** - text block before colored block,
@@ -52,12 +52,13 @@ Attachment can be build from:
 - **Text** - text displayed under the title
 - **Color** - color of left border of block, you can use any in hex format `#RRGGBB` or predefined: `Color.good`, `Color.warning` or `Color.danger`
 - **Field** - you can add as many Fields as you want. Every field is build from title, value and boolean value that describe the field should be displayed one per row.
-  In exaple aobve there are 4 fields described. First and 4th are long (one per row) and the 2nd & 3rd are short(placed in one row).
-  Field's title is bold.
+Title of Field is displayed as **bold** text.
+  In the example above there are 4 fields described. First and 4th are long (one per row) and the 2nd & 3rd are short(placed in one row).
+
 
 You can use any combination of these.
 
-code for example above:
+Code for example above:
 
     publish(RichOutboundMessage(m.channel, List(
             Attachment(
