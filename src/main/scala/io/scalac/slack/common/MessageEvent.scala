@@ -26,7 +26,7 @@ case object Hello extends IncomingMessage
  * @param user ID of message author
  * @param ts unique timestamp
  */
-case class BaseMessage(text: String, channel: String, user: String, ts: DateTime, edited: Boolean = false) extends IncomingMessage
+case class BaseMessage(text: String, channel: String, user: String, ts: String, edited: Boolean = false) extends IncomingMessage
 
 //user issued command to bot
 case class Command(command: String, params: List[String], underlying: BaseMessage) extends IncomingMessage
