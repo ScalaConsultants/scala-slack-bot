@@ -18,6 +18,7 @@ class SlackBotActor extends Actor with ActorLogging {
   import context.{dispatcher, system}
 
   val api = context.actorOf(Props[ApiActor])
+  val richProcessor = context.actorOf(Props(new OutgoingRichMessageProcessor(api)))
 
   var errors = 0
 

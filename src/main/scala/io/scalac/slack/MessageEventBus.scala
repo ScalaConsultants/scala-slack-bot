@@ -21,6 +21,7 @@ class MessageEventBus extends ActorEventBus with LookupClassification {
     event match {
       case im: IncomingMessage => Incoming
       case om: OutgoingMessage => Outgoing
+      case rich: RichOutboundMessage => Outgoing
     }
   }
 }

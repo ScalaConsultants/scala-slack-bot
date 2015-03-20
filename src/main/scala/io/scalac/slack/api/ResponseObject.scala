@@ -18,4 +18,6 @@ object ResponseObject {
     AuthData(atr.url.getOrElse("url"), atr.team.getOrElse("team"), atr.user.getOrElse("user"), atr.team_id.getOrElse("teamID"), atr.user_id.getOrElse("userID"))
 }
 
+case class ChatPostMessageResponse(ok: Boolean, channel: String, error: Option[String]) extends ResponseObject
+
 case class BotInfo(id: String, name: String)

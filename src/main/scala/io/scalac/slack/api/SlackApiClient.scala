@@ -24,6 +24,7 @@ object SlackApiClient extends ApiClient{
   val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
 
   def get[T <: ResponseObject](endpoint: String, params: Map[String, String] = Map.empty[String, String])(implicit reader: JsonReader[T]): Future[T] = request(HttpMethods.GET, endpoint, params)
+  def post[T <: ResponseObject](endpoint: String, params: Map[String, String] = Map.empty[String, String])(implicit reader: JsonReader[T]): Future[T] = request(HttpMethods.POST, endpoint, params)
 
   def request[T <: ResponseObject](method: HttpMethod, endpoint: String, params: Map[String, String] = Map.empty[String,String])(implicit reader: JsonReader[T]): Future[T] = {
 
