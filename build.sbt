@@ -26,7 +26,9 @@ libraryDependencies ++= {
     "org.scala-lang.modules" %% "scala-xml" % "1.0.2",
     "org.scala-lang" % "scala-compiler" % "2.10.2",
     "org.scala-lang" % "jline" % "2.10.2",
-    "org.twitter4j" % "twitter4j-core" % "4.0.0"
+    "org.twitter4j" % "twitter4j-core" % "4.0.0",
+    "com.typesafe.slick" %% "slick" % "2.1.0",
+    "com.h2database" % "h2" % "1.4.186"
   )
 }
 

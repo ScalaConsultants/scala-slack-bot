@@ -1,32 +1,35 @@
 package io.scalac.slack.bots.twitter
 
 import io.scalac.slack.bots.IncomingMessageListener
-import io.scalac.slack.common.{OutboundMessage, Command}
+import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
+import org.joda.time.{DateTimeZone, DateTime}
 import twitter4j.TwitterFactory
 import twitter4j.conf.ConfigurationBuilder
 
+import scala.slick.driver.H2Driver.simple._
+import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
-class TwitterBot(twitter: Twitter) extends IncomingMessageListener {
+class TwitterBot(twitter: TwitterMessenger, repo: TwitterRepository) extends IncomingMessageListener {
 
   log.debug(s"Starting $this")
 
   val peopleToInform = " @patryk @mat "
 
-  def saveToDb(msg: String) = {
-    //TODO: needs DB
-  }
+  def saveToDb(msg: String, user: String) = repo.create(msg, user)
+
+  def countAll() = repo.count()
 
   def receive = {
     case Command("twitter-post", twitText, message) =>
       val msg = twitText.mkString(" ")
       log.debug(s"Got x= twitter-post $msg from Slack")
       twitter.post(msg)
-      saveToDb(msg)
-      publish(OutboundMessage(message.channel, s"$msg has been posted to Twitter! $peopleToInform"))
+      saveToDb(msg, message.user)
+      publish(OutboundMessage(message.channel, s"$msg has been posted to Twitter! This is our ${countAll()} published Tweet $peopleToInform"))
   }
 }
 
-class Twitter(
+class TwitterMessenger(
   consumerKey: String,
   consumerKeySecret: String,
   accessToken: String,
@@ -44,5 +47,36 @@ class Twitter(
   def post(text: String): Boolean = {
     twitter.updateStatus(text)
     true
+  }
+}
+
+class TwitterRepository() extends AbstractRepository {
+  /// definitions
+  override val bucket = "TwitterBot"
+
+  private class PublishedTweet(tag: Tag) extends Table[(Long, String, String, Long)](tag, s"${bucket}_PublishedTweet") {
+    def id = column[Long]("PublishedTweetId", O.PrimaryKey, O.AutoInc)
+    def text = column[String]("Text")
+    def author = column[String]("Author")
+    def added = column[Long]("Added")
+    def * = (id, text, author, added)
+  }
+  private val published = TableQuery[PublishedTweet]
+
+  db.withDynSession {
+    if(migrationNeeded())
+      published.ddl.create
+  }
+
+  //public methods
+
+  def create(msg: String, user: String) = {
+    db.withDynSession{
+      val when = new DateTime(DateTimeZone.UTC).getMillis
+      published.insert((-1L, msg, user, when))
+    }
+  }
+  def count() = db.withDynSession{
+    published.list.length //TODO: not efficient
   }
 }
