@@ -16,6 +16,10 @@ abstract class MessageListener extends Actor with ActorLogging {
   }
 }
 
+/**
+ * A raw messaging interface used to create internal system level bots.
+ * For user facing bots use AbstractBot
+ */
 abstract class IncomingMessageListener extends MessageListener {
   @throws[Exception](classOf[Exception])
   override def preStart(): Unit = bus.subscribe(self, Incoming)
@@ -26,6 +30,9 @@ abstract class OutgoingMessageListener extends MessageListener {
   override def preStart(): Unit = bus.subscribe(self, Outgoing)
 }
 
+/**
+ * The class to extend when creating a bot.
+ */
 abstract class AbstractBot extends IncomingMessageListener {
   log.debug(s"Starting ${self.path.name}")
 

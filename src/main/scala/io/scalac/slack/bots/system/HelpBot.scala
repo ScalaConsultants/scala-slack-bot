@@ -9,5 +9,8 @@ class HelpBot extends AbstractBot {
       publish(HelpRequest(options.headOption, raw.channel))
   }
 
-  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"${name} is for helping Duh")
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel,
+    s"*${name}* is for helping. Duh \\n" +
+      s"`help` - display help from all bots \\n " +
+      s"`help {botName}` - display help for certain bot module")
 }

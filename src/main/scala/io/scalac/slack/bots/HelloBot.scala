@@ -7,13 +7,16 @@ import scala.util.Random
 /**
  * Created on 16.02.15 21:32
  */
-class HelloBot extends IncomingMessageListener {
+class HelloBot extends AbstractBot {
   val welcomes = List("what's up?", "how's going?", "ready for work?", "nice to see you again")
 
   def welcome = Random.shuffle(welcomes).head
 
-  override def receive: Receive = {
+  override def act: Receive = {
     case Command("hello", _, message) =>
       publish(OutboundMessage(message.channel, s"hello <@${message.user}>, $welcome"))
   }
+
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"When you feel lonely and unwanted *${name}* is something for you. \\n " +
+      s"`hello` - to talk with the bot")
 }
