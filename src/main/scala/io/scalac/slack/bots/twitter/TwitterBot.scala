@@ -9,6 +9,9 @@ import twitter4j.conf.ConfigurationBuilder
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
+/**
+ * Maintainer: Patryk
+ */
 class TwitterBot(twitter: TwitterMessenger, repo: TwitterRepository) extends AbstractBot {
 
   log.debug(s"Starting $this")

@@ -7,6 +7,9 @@ import scala.tools.nsc.interpreter.IMain
 import scala.tools.nsc.Settings
 import java.io.PrintWriter
 
+/**
+ * Maintainer: Patryk
+ */
 class ReplBot(scalaLibraryPath: String) extends AbstractBot {
 
   log.debug(s"Starting $this")

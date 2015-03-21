@@ -5,7 +5,7 @@ import io.scalac.slack.common.{Command, OutboundMessage}
 import scala.util.Random
 
 /**
- * Created on 16.02.15 21:32
+ * Maintainer: Mario
  */
 class HelloBot extends AbstractBot {
   val welcomes = List("what's up?", "how's going?", "ready for work?", "nice to see you again")

@@ -3,6 +3,9 @@ package io.scalac.slack.bots.system
 import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{HelpRequest, Command, OutboundMessage}
 
+/**
+ * Maintainer: Patryk
+ */
 class HelpBot extends AbstractBot {
   override def act: Receive = {
     case Command("help", options, raw) =>

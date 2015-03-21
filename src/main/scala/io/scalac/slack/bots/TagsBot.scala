@@ -6,6 +6,9 @@ import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.meta._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
+/**
+ * Maintainer: Patryk
+ */
 class TagsBot(tagsRepo: TagsRepository) extends AbstractBot {
 
   def act = {

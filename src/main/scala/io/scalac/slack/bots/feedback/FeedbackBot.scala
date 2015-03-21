@@ -7,6 +7,9 @@ import org.joda.time.{DateTimeZone, DateTime}
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
+/**
+ * Maintainer: Patryk
+ */
 class FeedbackBot(repo: FeedbackRepository) extends AbstractBot {
   log.debug(s"Starting $this")
 
