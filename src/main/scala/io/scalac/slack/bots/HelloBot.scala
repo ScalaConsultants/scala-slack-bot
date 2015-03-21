@@ -21,7 +21,7 @@ class HelloBot extends IncomingMessageListener {
 
     case BaseMessage(text, channel, user, _, _) =>
       SlackBot.botInfo match {
-        case Some(bi) if text.matches("(^|\\s*)(hi|hello)($|(\\s+.*))") && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id =>
+        case Some(bi) if text.matches("(?i)(^|\\s*)(hi|hello)($|(\\s+.*))") && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id =>
 
           //multiline message example
           // new line sign `\n` should be double escaped, slash twice.
