@@ -11,7 +11,7 @@ import scala.util.Random
 class HelloBot extends IncomingMessageListener {
   log.debug(s"Starting $this")
 
-  val welcomes = List("what's up?", "how's going?" , "ready for work?" , "nice to see you")
+  val welcomes = List("what's up?", "how's going?", "ready for work?", "nice to see you")
 
   def welcome = Random.shuffle(welcomes).head
 
@@ -21,15 +21,16 @@ class HelloBot extends IncomingMessageListener {
 
     case BaseMessage(text, channel, user, _, _) =>
       SlackBot.botInfo match {
-        case Some(bi) if (text.startsWith("hi ") || text.startsWith("hello ")) && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id =>
+        case Some(bi) if text.matches("(^|\\s*)(hi|hello)($|(\\s+.*))") && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id =>
 
           //multiline message example
           // new line sign `\n` should be double escaped, slash twice.
-            publish(OutboundMessage(channel, s"""hello <@$user>,\\n $welcome"""))
+          publish(OutboundMessage(channel, s"""hello <@$user>,\\n $welcome"""))
 
-        case None => //nothing to do!
+        case _ => //nothing to do!
 
       }
 
   }
+
 }
