@@ -74,9 +74,11 @@ object Color {
   val danger = Color("danger")
 }
 
+case class ImageUrl(url: String) extends RichMessageElement
+
 case class RichOutboundMessage(channel: String, elements: List[Attachment]) extends MessageEvent
 
-case class Attachment(text: Option[String] = None, pretext: Option[String] = None, fields: Option[List[Field]] = None, title: Option[String] = None, title_link: Option[String] = None, color: Option[String] = None) {
+case class Attachment(text: Option[String] = None, pretext: Option[String] = None, fields: Option[List[Field]] = None, title: Option[String] = None, title_link: Option[String] = None, color: Option[String] = None, image_url: Option[String] = None) {
   def isValid = text.isDefined || pretext.isDefined || title.isDefined || (fields.isDefined && fields.get.nonEmpty)
 
   def addElement(element: RichMessageElement): Attachment = {
@@ -89,6 +91,7 @@ case class Attachment(text: Option[String] = None, pretext: Option[String] = Non
         copy(pretext = Some(value))
       case Text(value) if value.nonEmpty =>
         copy(text = Some(value))
+      case ImageUrl(url) if url.nonEmpty => copy(image_url = Some(url))
       case f: Field => copy(fields = Some(this.fields.getOrElse(List.empty[Field]) :+ f))
       case _ => this
     }

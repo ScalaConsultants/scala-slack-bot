@@ -5,7 +5,9 @@ import io.scalac.slack.common._
 /**
  * Created on 16.02.15 23:11
  */
-class RichMessageTest extends IncomingMessageListener {
+class RichMessageTestBot extends IncomingMessageListener {
+  log.debug(s"Starting $this")
+  
   override def receive: Receive = {
     case Command("rich", params, m) =>
       publish(RichOutboundMessage(m.channel, List(
@@ -20,7 +22,7 @@ class RichMessageTest extends IncomingMessageListener {
           Field("Field 4", "fill entire row")
         ),
         Attachment(Title("Good message"), Text("something like that")),
-        Attachment(Color.warning, Field("Teraz field", "taka sytuacja"))
+        Attachment(Color.warning, Field("Teraz field", "taka sytuacja"), ImageUrl("http://www.scalac.io/img/logo/scalac_logo2.png"))
       )
       )
       )
