@@ -12,11 +12,7 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class TwitterBot(twitter: TwitterMessenger, repo: TwitterRepository) extends AbstractBot {
-
-  log.debug(s"Starting $this")
-
-  val peopleToInform = " @patryk @mat "
+class TwitterBot(peopleToInform: String, twitter: TwitterMessenger, repo: TwitterRepository) extends AbstractBot {
 
   def saveToDb(msg: String, user: String) = repo.create(msg, user)
 
@@ -31,11 +27,9 @@ class TwitterBot(twitter: TwitterMessenger, repo: TwitterRepository) extends Abs
       publish(OutboundMessage(message.channel, s"$msg has been posted to Twitter! This is our ${countAll()} published Tweet $peopleToInform"))
   }
 
-  val account = "scalac_io"
-
   override def help(channel: String): OutboundMessage = OutboundMessage(channel,
-    s"${name} brings $account Twitter account to the masses. \\n " +
-      s"`twitter-post {message}` - posts the given message to Twitter as $account")
+    s"*${name}* brings company Twitter account to the masses. \\n " +
+      s"`twitter-post {message}` - posts the given message to Twitter from company account")
 }
 
 class TwitterMessenger(

@@ -21,4 +21,5 @@ object Config {
   def consumerKeySecret: String  = config.getString("twitter.consumerKeySecret")
   def accessToken: String  = config.getString("twitter.accessToken")
   def accessTokenSecret: String  = config.getString("twitter.accessTokenSecret")
+  def twitterGuardians: String  = config.getString("twitter.guardians")
 }

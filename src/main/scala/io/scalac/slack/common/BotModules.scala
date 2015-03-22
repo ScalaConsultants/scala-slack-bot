@@ -20,6 +20,7 @@ object BotModules {
     val replBot =  context.actorOf(Props(classOf[ReplBot], Config.scalaLibraryPath), "replBot")
     val twitterBot =  context.actorOf(
       Props(classOf[TwitterBot],
+        Config.twitterGuardians,
         new TwitterMessenger(Config.consumerKey,
           Config.consumerKeySecret,
           Config.accessToken,
