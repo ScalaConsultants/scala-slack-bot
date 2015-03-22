@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import io.scalac.slack.api.ResponseObject._
 import io.scalac.slack.common.JsonProtocols._
 import io.scalac.slack.common.{Attachment, RichOutboundMessage}
-import io.scalac.slack.{ApiTestError, Config, SlackError}
+import io.scalac.slack._
 import spray.json._
 
 import scala.util.{Failure, Success}
@@ -61,7 +61,8 @@ class ApiActor extends Actor with ActorLogging {
         case Success(res) =>
           if (res.ok)
             send ! RtmData(res.url)
-          send ! res.self
+            send ! res.self
+            SlackBot.usersStorage ! RegisterUsers(res.users:_*)
         case Failure(ex) =>
           send ! ex
       }
