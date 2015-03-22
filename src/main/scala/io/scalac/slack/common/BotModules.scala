@@ -15,7 +15,7 @@ object BotModules {
     val pingpongBot = context.actorOf(Props[PingPongBot])
     val digestBot = context.actorOf(Props(classOf[DigestBot], new DigestRepository()))
     val commandProcessor = context.actorOf(Props[CommandsRecognizerBot])
-    val helloBot = context.actorOf(Props[HelloBot])
+    val helloBot = context.actorOf(Props[DialogBot])
     val replBot =  context.actorOf(Props(classOf[ReplBot], Config.scalaLibraryPath))
     val twitterBot =  context.actorOf(
       Props(classOf[TwitterBot],
