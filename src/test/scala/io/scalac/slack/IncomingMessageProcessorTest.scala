@@ -81,7 +81,7 @@ class IncomingMessageProcessorTest(_system: ActorSystem) extends TestKit(_system
                    |  "user": "U2147483697",
                    |  "text": "Hello world",
                    |  "ts": "$uniqueTS}"
-                                        |}""".stripMargin
+                   |}""".stripMargin
         theProbe.expectMsg(1 second, BaseMessage("Hello world", "C2147483705", "U2147483697", baseTime, edited = false))
       }
     }
