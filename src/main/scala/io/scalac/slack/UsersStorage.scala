@@ -13,7 +13,13 @@ class UsersStorage extends Actor with ActorLogging {
   implicit def convertUsers(su: SlackUser): UserInfo = UserInfo(su.id, su.name, su.presence)
 
   override def receive: Receive = {
-    case RegisterUsers(users @ _*) => users.filterNot(u=> u.deleted).foreach(addUser(_))
+    case RegisterUsers(users@_*) =>
+      users.filterNot(u => u.deleted).foreach(addUser(_))
+
+    case FindUser(matcher) => sender ! userCatalog.find { u =>
+      val m = matcher.trim.toLowerCase
+      m == u.id.trim.toLowerCase || m == u.name.trim.toLowerCase
+    }
   }
 
   def addUser(user: UserInfo) = {
@@ -26,4 +32,6 @@ class UsersStorage extends Actor with ActorLogging {
 case class UserInfo(id: String, name: String, presence: Presence)
 
 case class RegisterUsers(slackUsers: SlackUser*)
+
+case class FindUser(key: String)
 
