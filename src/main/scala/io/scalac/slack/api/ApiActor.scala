@@ -27,7 +27,7 @@ class ApiActor extends Actor with ActorLogging {
       SlackApiClient.get[ApiTestResponse]("api.test", params) onComplete {
         case Success(res) =>
           if (res.ok) {
-            send ! Ok(res.args)
+            send ! Ok
           }
           else {
             send ! ApiTestError

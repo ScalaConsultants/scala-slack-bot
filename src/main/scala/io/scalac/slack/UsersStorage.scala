@@ -1,6 +1,7 @@
 package io.scalac.slack
 
 import akka.actor.{Actor, ActorLogging}
+import io.scalac.slack.api.Ok
 import io.scalac.slack.models.{Presence, SlackUser}
 
 /**
@@ -10,15 +11,15 @@ class UsersStorage extends Actor with ActorLogging {
 
   var userCatalog = List.empty[UserInfo]
 
-  implicit def convertUsers(su: SlackUser): UserInfo = UserInfo(su.id, su.name, su.presence)
+  implicit def convertUsers(su: SlackUser): UserInfo = UserInfo(su.id.trim, su.name.trim, su.presence)
 
   override def receive: Receive = {
     case RegisterUsers(users@_*) =>
       users.filterNot(u => u.deleted).foreach(addUser(_))
-      sender ! "ok"
+      sender ! Ok
     case FindUser(matcher) => sender ! userCatalog.find { u =>
-      val m = matcher.trim.toLowerCase
-      m == u.id.trim.toLowerCase || m == u.name.trim.toLowerCase
+      val m = matcher.trim
+      m == u.id || m == u.name
     }
   }
 

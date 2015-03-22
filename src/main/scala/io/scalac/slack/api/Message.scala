@@ -18,7 +18,7 @@ case class AuthTest(token: APIKey) extends Message
 case class RtmStart(token: APIKey) extends Message
 
 //API RESPONSES
-case class Ok(args: Option[Map[String, String]]) extends Message
+case object Ok extends Message
 
 case class AuthData(url: String, team: String, user: String, teamId: String, userId: String) extends Message
 

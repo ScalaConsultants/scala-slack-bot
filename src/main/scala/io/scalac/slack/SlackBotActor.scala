@@ -31,7 +31,7 @@ class SlackBotActor extends Actor with ActorLogging {
       api ! ApiTest()
     case Stop =>
       SlackBot.shutdown()
-    case Ok(_) =>
+    case Ok =>
       log.info("connected successfully...")
       log.info("trying to auth")
       api ! AuthTest(Config.apiKey)

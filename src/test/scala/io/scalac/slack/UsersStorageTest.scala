@@ -2,6 +2,7 @@ package io.scalac.slack
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{DefaultTimeout, ImplicitSender, TestKit}
+import io.scalac.slack.api.Ok
 import io.scalac.slack.models.{Active, SlackUser}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -25,7 +26,7 @@ class UsersStorageTest(_system: ActorSystem) extends TestKit(_system) with Defau
 
       within(2 seconds) {
         us ! RegisterUsers(mario)
-        expectMsg("ok")
+        expectMsg(Ok)
       }
 
     }
@@ -37,7 +38,7 @@ class UsersStorageTest(_system: ActorSystem) extends TestKit(_system) with Defau
 
       within(1 second){
         us ! RegisterUsers(mario, stefek)
-        expectMsg("ok")
+        expectMsg(Ok)
         us ! FindUser("mario")
         expectMsg(Some(UserInfo("1234", "mario", Active)))
         us ! FindUser("12345")
