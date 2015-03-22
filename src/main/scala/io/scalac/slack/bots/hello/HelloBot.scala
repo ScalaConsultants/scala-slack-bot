@@ -1,5 +1,6 @@
-package io.scalac.slack.bots
+package io.scalac.slack.bots.hello
 
+import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{Command, OutboundMessage}
 
 import scala.util.Random

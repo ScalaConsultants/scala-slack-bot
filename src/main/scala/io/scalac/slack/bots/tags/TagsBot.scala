@@ -1,9 +1,10 @@
-package io.scalac.slack.bots
+package io.scalac.slack.bots.tags
 
+import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common._
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.{DateTime, DateTimeZone}
+
 import scala.slick.driver.H2Driver.simple._
-import scala.slick.jdbc.meta._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
 /**

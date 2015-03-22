@@ -4,8 +4,11 @@ import akka.actor.{ActorContext, ActorRef, Props}
 import io.scalac.slack.Config
 import io.scalac.slack.bots.digest.{DigestRepository, DigestBot}
 import io.scalac.slack.bots.feedback.{FeedbackRepository, FeedbackBot}
+import io.scalac.slack.bots.hello.HelloBot
+import io.scalac.slack.bots.ping.PingPongBot
 import io.scalac.slack.bots.repl.ReplBot
-import io.scalac.slack.bots.system.HelpBot
+import io.scalac.slack.bots.system.{CommandsRecognizerBot, HelpBot}
+import io.scalac.slack.bots.tags.{TagsRepository, TagsBot}
 import io.scalac.slack.bots.twitter.{TwitterRepository, TwitterMessenger, TwitterBot}
 import io.scalac.slack.bots._
 

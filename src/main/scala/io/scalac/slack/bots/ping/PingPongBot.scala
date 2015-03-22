@@ -1,7 +1,8 @@
-package io.scalac.slack.bots
+package io.scalac.slack.bots.ping
 
 import java.util.concurrent.TimeUnit
 
+import io.scalac.slack.bots.IncomingMessageListener
 import io.scalac.slack.common.{Ping, Pong}
 
 import scala.concurrent.duration.Duration
