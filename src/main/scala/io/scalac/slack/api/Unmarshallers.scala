@@ -51,4 +51,5 @@ object Unmarshallers extends DefaultJsonProtocol {
   implicit val userFormat = jsonFormat(SlackUser, "id", "name", "deleted", "is_admin", "is_owner", "is_primary_owner", "is_restricted", "is_ultra_restricted", "has_files", "is_bot", "presence")
   implicit val botInfoFormat = jsonFormat(BotInfo, "id", "name")
   implicit val rtmStartResponseFormat = jsonFormat(RtmStartResponse, "ok", "url", "users", "channels", "self")
+  implicit val chatPostMessageResponse = jsonFormat(ChatPostMessageResponse, "ok", "channel", "error")
 }

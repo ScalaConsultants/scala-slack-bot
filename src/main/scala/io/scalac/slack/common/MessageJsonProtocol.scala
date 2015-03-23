@@ -1,6 +1,5 @@
 package io.scalac.slack.common
 
-import io.scalac.slack.common.SlackDateTime._
 import spray.json._
 
 /**
@@ -15,11 +14,11 @@ object MessageJsonProtocol extends DefaultJsonProtocol {
       value.asJsObject.getFields("text", "channel", "user", "ts", "edited") match {
 
         case Seq(JsString(text), JsString(channel), JsString(user), JsString(ts)) =>
-          BaseMessage(text, channel, user, parseUniqueTimestamp(ts), edited = false)
+          BaseMessage(text, channel, user, ts, edited = false)
 
         case Seq(JsString(text), JsString(channel), JsString(user), JsString(ts), JsObject(edited)) =>
 
-          BaseMessage(text, channel, user, parseUniqueTimestamp(ts), edited = true)
+          BaseMessage(text, channel, user, ts, edited = true)
 
         case _ =>
           throw new DeserializationException("BaseMessage expected")

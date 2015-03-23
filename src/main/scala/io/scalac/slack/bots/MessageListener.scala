@@ -3,18 +3,23 @@ package io.scalac.slack.bots
 import akka.actor.{Actor, ActorLogging}
 import io.scalac.slack.SlackBot
 import io.scalac.slack.common._
+import io.scalac.slack.common.{RichOutboundMessage, Outgoing, Incoming, MessageEvent}
 
 /**
  * Created on 08.02.15 23:52
  */
-abstract class MessageListener extends Actor with ActorLogging {
-
+trait MessagePublisher {
   def bus = SlackBot.eventBus
 
   def publish(event: MessageEvent) = {
     bus.publish(event)
   }
+  def publish(event: RichOutboundMessage) = {
+    bus.publish(event)
+  }
 }
+
+abstract class MessageListener extends Actor with ActorLogging with MessagePublisher
 
 /**
  * A raw messaging interface used to create internal system level bots.

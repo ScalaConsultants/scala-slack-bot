@@ -2,6 +2,8 @@ package io.scalac.slack.common
 
 import org.joda.time.DateTime
 
+import scala.annotation.tailrec
+
 /**
  * Created on 08.02.15 22:04
  */
@@ -24,7 +26,7 @@ case object Hello extends IncomingMessage
  * @param user ID of message author
  * @param ts unique timestamp
  */
-case class BaseMessage(text: String, channel: String, user: String, ts: DateTime, edited: Boolean = false) extends IncomingMessage
+case class BaseMessage(text: String, channel: String, user: String, ts: String, edited: Boolean = false) extends IncomingMessage
 
 //user issued command to bot
 case class Command(command: String, params: List[String], underlying: BaseMessage) extends IncomingMessage
@@ -52,11 +54,67 @@ case object Ping extends OutgoingMessage {
 case class OutboundMessage(channel: String, text: String) extends OutgoingMessage {
   override def toJson =
     s"""{
-      | "id": ${MessageCounter.next},
-      | "type": "message",
-      | "channel": "$channel",
-      | "text": "$text"
+      |"id": ${MessageCounter.next},
+      |"type": "message",
+      |"channel": "$channel",
+      |"text": "$text"
       |}""".stripMargin
+}
+
+sealed trait RichMessageElement
+
+case class Text(value: String) extends RichMessageElement
+
+case class PreText(value: String) extends RichMessageElement
+
+case class Field(title: String, value: String, short: Boolean = false) extends RichMessageElement
+
+case class Title(value: String, url: Option[String] = None) extends RichMessageElement
+
+case class Color(value: String) extends RichMessageElement
+
+object Color {
+  val good = Color("good")
+  val warning = Color("warning")
+  val danger = Color("danger")
+}
+
+case class RichOutboundMessage(channel: String, elements: List[Attachment]) extends MessageEvent
+
+case class Attachment(text: Option[String] = None, pretext: Option[String] = None, fields: Option[List[Field]] = None, title: Option[String] = None, title_link: Option[String] = None, color: Option[String] = None) {
+  def isValid = text.isDefined || pretext.isDefined || title.isDefined || (fields.isDefined && fields.get.nonEmpty)
+
+  def addElement(element: RichMessageElement): Attachment = {
+    element match {
+      case Color(value) if value.nonEmpty =>
+        copy(color = Some(value))
+      case Title(value, url) if value.nonEmpty =>
+        copy(title = Some(value), title_link = url)
+      case PreText(value) if value.nonEmpty =>
+        copy(pretext = Some(value))
+      case Text(value) if value.nonEmpty =>
+        copy(text = Some(value))
+      case f: Field => copy(fields = Some(this.fields.getOrElse(List.empty[Field]) :+ f))
+      case _ => this
+    }
+  }
+}
+
+object Attachment {
+
+
+  def apply(elements: RichMessageElement*): Attachment = {
+
+    @tailrec
+    def loopBuild(elems: List[RichMessageElement], acc: Attachment): Attachment = {
+      elems match {
+        case Nil => acc
+        case head :: tail => loopBuild(tail, acc.addElement(head))
+      }
+    }
+    loopBuild(elements.toList, new Attachment())
+  }
+
 }
 
 

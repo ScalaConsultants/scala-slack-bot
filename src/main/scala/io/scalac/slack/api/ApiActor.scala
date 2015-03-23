@@ -2,7 +2,10 @@ package io.scalac.slack.api
 
 import akka.actor.{Actor, ActorLogging}
 import io.scalac.slack.api.ResponseObject._
-import io.scalac.slack.{ApiTestError, SlackError}
+import io.scalac.slack.common.JsonProtocols._
+import io.scalac.slack.common.{Attachment, RichOutboundMessage}
+import io.scalac.slack.{ApiTestError, Config, SlackError}
+import spray.json._
 
 import scala.util.{Failure, Success}
 
@@ -58,9 +61,24 @@ class ApiActor extends Actor with ActorLogging {
         case Success(res) =>
           if (res.ok)
             send ! RtmData(res.url)
-            send ! res.self
+          send ! res.self
         case Failure(ex) =>
           send ! ex
       }
+    case msg: RichOutboundMessage =>
+      log.debug("chat.postMessage requested")
+
+      val attachments = msg.elements.filter(_.isValid).map(_.toJson).mkString("[", ",", "]")
+      val params = Map("token" -> Config.apiKey.key, "channel" -> msg.channel, "as_user" -> "true", "attachments" -> attachments)
+
+      SlackApiClient.post[ChatPostMessageResponse]("chat.postMessage", params) onComplete {
+        case Success(res) =>
+          if (res.ok) {
+            log.info("[chat.postMessage]: message delivered: " + res.toString)
+          }
+        case Failure(ex) =>
+          log.error("[chat.postMessage] Error encountered - " + ex.getMessage)
+      }
+
   }
 }
