@@ -52,7 +52,8 @@ Attachment can be build from:
 - **Text** - text displayed under the title
 - **Color** - color of left border of block, you can use any in hex format `#RRGGBB` or predefined: `Color.good`, `Color.warning` or `Color.danger`
 - **Field** - you can add as many Fields as you want. Every field is build from title, value and boolean value that describe the field should be displayed one per row.
-Title of Field is displayed as **bold** text.
+Title of Field is displayed as **bold** text.  
+- **ImageUrl** - url to the image that should be attached to  message  
   In the example above there are 4 fields described. First and 4th are long (one per row) and the 2nd & 3rd are short(placed in one row).
 
 
