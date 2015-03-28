@@ -1,21 +1,22 @@
 package io.scalac.slack.bots.digest
 
 import io.scalac.slack.common.{AbstractRepository, Command, OutboundMessage}
-import io.scalac.slack.bots.IncomingMessageListener
+import io.scalac.slack.bots.AbstractBot
 import org.joda.time.{DateTimeZone, DateTime}
 
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
-class DigestBot(linkRepo: DigestRepository) extends IncomingMessageListener {
-
-  log.debug(s"Starting $this")
+/**
+ * Maintainer: Patryk
+ */
+class DigestBot(linkRepo: DigestRepository) extends AbstractBot {
 
   def put(linkToStore: String, user: String) = linkRepo.create(linkToStore, user)
   def get() = linkRepo.read()
   def clear() = linkRepo.archive()
 
-  def receive = {
+  def act = {
     case Command("digest-put", links, message) =>
       log.debug(s"Got x= digest-put $links from Slack")
       links.foreach(put(_, message.user))
@@ -35,6 +36,11 @@ class DigestBot(linkRepo: DigestRepository) extends IncomingMessageListener {
   def publishContent(channel: String): Unit = {
     publish(OutboundMessage(channel, s"Digest contained: ${get().mkString(" ")}"))
   }
+
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"*${name}* is a helper for Scalac Digest \\n " +
+      s"`tag-put {link}` - adds the link to storage \\n" +
+      s"`digest-list` - prints all the un-archived links \\n" +
+      s"`tag-clear` - archives all links in the storage ")
 }
 
 class DigestRepository() extends AbstractRepository {

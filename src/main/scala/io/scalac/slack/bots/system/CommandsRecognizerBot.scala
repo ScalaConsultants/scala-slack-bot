@@ -1,6 +1,7 @@
-package io.scalac.slack.bots
+package io.scalac.slack.bots.system
 
 import io.scalac.slack.SlackBot
+import io.scalac.slack.bots.IncomingMessageListener
 import io.scalac.slack.common.{BaseMessage, Command}
 
 /**

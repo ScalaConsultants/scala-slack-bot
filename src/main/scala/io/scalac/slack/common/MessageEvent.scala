@@ -34,6 +34,11 @@ case class Command(command: String, params: List[String], underlying: BaseMessag
 //last in the incoming messages hierarchy
 case class UndefinedMessage(body: String) extends IncomingMessage
 
+/**
+ * User requested help for given target
+ * @param target Some(x) bot named x should display it's help, None any bot receiving command should send help
+ */
+case class HelpRequest(target: Option[String], channel: String) extends IncomingMessage
 
 /**
  * Outgoing message types

@@ -1,25 +1,33 @@
 package io.scalac.slack.bots.feedback
 
-import io.scalac.slack.bots.IncomingMessageListener
+import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
 
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
-class FeedbackBot(repo: FeedbackRepository) extends IncomingMessageListener {
+/**
+ * Maintainer: Patryk
+ */
+class FeedbackBot(repo: FeedbackRepository) extends AbstractBot {
   log.debug(s"Starting $this")
 
-  def receive = {
+  def act = {
     case Command("improve", "list" :: _, message) =>
-      log.debug(s"Got x= feedback-list from Slack")
+      log.debug(s"Got x= improve-list from Slack")
       publish(OutboundMessage(message.channel, s"Feedback list: \\n ${repo.read().mkString("\\n")}"))
 
     case Command("improve", text, message) =>
-      log.debug(s"Got x= feedback from Slack")
+      log.debug(s"Got x= improve from Slack")
       repo.create(text.mkString(" "), message.user)
       publish(OutboundMessage(message.channel, s"Thank you for your feedback :) Let's make Scalac a better place"))
   }
+
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel,
+    s"*${name}* is tool allowing us to gather anonymous feedback \\n" +
+      s"`improve {idea}` - send this command as a DM to bot to save anonymous feedback \\n " +
+      s"`improve list` - use it to get list of all improvement ideas")
 }
 
 class FeedbackRepository() extends AbstractRepository {

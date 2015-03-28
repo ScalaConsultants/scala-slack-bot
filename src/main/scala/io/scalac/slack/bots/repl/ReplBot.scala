@@ -1,24 +1,22 @@
 package io.scalac.slack.bots.repl
 
-import io.scalac.slack.bots.IncomingMessageListener
+import io.scalac.slack.bots.{AbstractBot, IncomingMessageListener}
 import io.scalac.slack.common.{OutboundMessage, Command}
 
-import scala.tools.nsc.Interpreter
 import scala.tools.nsc.interpreter.IMain
-import scala.tools.nsc.interpreter.Results.Success
-
-import scala.tools.nsc.interpreter.ILoop
 import scala.tools.nsc.Settings
-import java.io.CharArrayWriter
 import java.io.PrintWriter
 
-class ReplBot(scalaLibraryPath: String) extends IncomingMessageListener {
+/**
+ * Maintainer: Patryk
+ */
+class ReplBot(scalaLibraryPath: String) extends AbstractBot {
 
   log.debug(s"Starting $this")
 
   lazy val interpreter = new Repl(scalaLibraryPath)
   
-  def receive = {
+  def act = {
     case Command("repl", code, message) =>
       log.debug(s"Got x= repl $code from Slack")
       val r = interpreter.run(code.mkString(" "))
@@ -29,6 +27,11 @@ class ReplBot(scalaLibraryPath: String) extends IncomingMessageListener {
       interpreter.reset()
       publish(OutboundMessage(message.channel, "Repl reset"))
   }
+
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel,
+    s"To sort-out Scala related discussions use *${name}* as a simple REPL \\n " +
+      s"`repl code` - interpret the code \\n" +
+      s"`repl-reset` - restart the repl ")
 }
 
 class Repl(scalaLibraryPath: String) {

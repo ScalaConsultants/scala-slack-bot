@@ -1,6 +1,6 @@
 package io.scalac.slack.bots.twitter
 
-import io.scalac.slack.bots.IncomingMessageListener
+import io.scalac.slack.bots.{AbstractBot, IncomingMessageListener}
 import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
 import twitter4j.TwitterFactory
@@ -9,17 +9,16 @@ import twitter4j.conf.ConfigurationBuilder
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
-class TwitterBot(twitter: TwitterMessenger, repo: TwitterRepository) extends IncomingMessageListener {
-
-  log.debug(s"Starting $this")
-
-  val peopleToInform = " @patryk @mat "
+/**
+ * Maintainer: Patryk
+ */
+class TwitterBot(peopleToInform: String, twitter: TwitterMessenger, repo: TwitterRepository) extends AbstractBot {
 
   def saveToDb(msg: String, user: String) = repo.create(msg, user)
 
   def countAll() = repo.count()
 
-  def receive = {
+  def act = {
     case Command("twitter-post", twitText, message) =>
       val msg = twitText.mkString(" ")
       log.debug(s"Got x= twitter-post $msg from Slack")
@@ -27,6 +26,10 @@ class TwitterBot(twitter: TwitterMessenger, repo: TwitterRepository) extends Inc
       saveToDb(msg, message.user)
       publish(OutboundMessage(message.channel, s"$msg has been posted to Twitter! This is our ${countAll()} published Tweet $peopleToInform"))
   }
+
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel,
+    s"*${name}* brings company Twitter account to the masses. \\n " +
+      s"`twitter-post {message}` - posts the given message to Twitter from company account")
 }
 
 class TwitterMessenger(

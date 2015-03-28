@@ -1,21 +1,21 @@
-package io.scalac.slack.bots
+package io.scalac.slack.bots.hello
 
+import io.scalac.slack.bots.AbstractBot
+import io.scalac.slack.common.{Command, OutboundMessage}
 import io.scalac.slack.SlackBot
 import io.scalac.slack.common.{BaseMessage, Command, OutboundMessage}
 
 import scala.util.Random
 
 /**
- * Created on 16.02.15 21:32
+ * Maintainer: Mario
  */
-class HelloBot extends IncomingMessageListener {
-  log.debug(s"Starting $this")
-
+class HelloBot extends AbstractBot {
   val welcomes = List("what's up?", "how's going?", "ready for work?", "nice to see you")
 
   def welcome = Random.shuffle(welcomes).head
 
-  override def receive: Receive = {
+  override def act: Receive = {
     case Command("hello", _, message) =>
       publish(OutboundMessage(message.channel, s"hello <@${message.user}>,\\n $welcome"))
 
@@ -33,4 +33,6 @@ class HelloBot extends IncomingMessageListener {
 
   }
 
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"When you feel lonely and unwanted *${name}* is something for you. \\n " +
+      s"`hello` - to talk with the bot")
 }

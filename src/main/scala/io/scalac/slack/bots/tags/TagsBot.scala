@@ -1,16 +1,18 @@
-package io.scalac.slack.bots
+package io.scalac.slack.bots.tags
 
+import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common._
-import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.{DateTime, DateTimeZone}
+
 import scala.slick.driver.H2Driver.simple._
-import scala.slick.jdbc.meta._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
-class TagsBot(tagsRepo: TagsRepository) extends IncomingMessageListener  {
+/**
+ * Maintainer: Patryk
+ */
+class TagsBot(tagsRepo: TagsRepository) extends AbstractBot {
 
-  log.debug(s"Starting $this")
-
-  def receive = {
+  def act = {
     case BaseMessage(fullMsg, channel, user, _, _) if fullMsg.contains("[") && fullMsg.contains("]") =>
       val wordList = fullMsg.split(" ")
       val tags = wordList.filter(x => x.startsWith("[") && x.endsWith("]")).map(_.toLowerCase().replaceAll("\\[", "").replaceAll("\\]", ""))
@@ -26,6 +28,10 @@ class TagsBot(tagsRepo: TagsRepository) extends IncomingMessageListener  {
       val data = tagsRepo.find(tag).getOrElse(List())
       publish(OutboundMessage(message.channel, s"Tag $tag contains \\n ${data.mkString("\\n")}"))
   }
+
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"*${name}* is used for storing useful info \\n " +
+      s"Add to a message word wrapped in square brackets to tag it with this word \\n" +
+      s"`tag {word}` command let's you get all the messages tagged with word")
 }
 
 class TagsRepository() extends AbstractRepository {
