@@ -10,12 +10,10 @@ import java.io.PrintWriter
 /**
  * Maintainer: Patryk
  */
-class ReplBot(scalaLibraryPath: String) extends AbstractBot {
+class ReplBot(interpreter: Repl) extends AbstractBot {
 
   log.debug(s"Starting $this")
 
-  lazy val interpreter = new Repl(scalaLibraryPath)
-  
   def act = {
     case Command("repl", code, message) =>
       log.debug(s"Got x= repl $code from Slack")
