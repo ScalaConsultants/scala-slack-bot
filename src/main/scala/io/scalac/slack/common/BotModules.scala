@@ -5,6 +5,7 @@ import io.scalac.slack.Config
 import io.scalac.slack.bots._
 import io.scalac.slack.bots.digest.{DigestRepository, DigestBot}
 import io.scalac.slack.bots.feedback.{FeedbackRepository, FeedbackBot}
+import io.scalac.slack.bots.gif.{GifsRepository, GifsBot}
 import io.scalac.slack.bots.hello.HelloBot
 import io.scalac.slack.bots.ping.PingPongBot
 import io.scalac.slack.bots.repl.ReplBot
@@ -36,5 +37,6 @@ object BotModules {
     val feedbackBot = context.actorOf(Props(classOf[FeedbackBot], new FeedbackRepository()), "feedbackBot")
     val helpBot = context.actorOf(Props[HelpBot], "helpBot")
     val importantMessagebot = context.actorOf(Props[ImportantMessageBot])
+    val gifBot = context.actorOf(Props(classOf[GifsBot], new GifsRepository()), "gifBot")
   }
 }
