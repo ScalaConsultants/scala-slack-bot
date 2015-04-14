@@ -1,12 +1,13 @@
 package io.scalac.slack.bots.system
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{HelpRequest, Command, OutboundMessage}
 
 /**
  * Maintainer: Patryk
  */
-class HelpBot extends AbstractBot {
+class HelpBot(implicit override val bus: MessageEventBus) extends AbstractBot {
   override def act: Receive = {
     case Command("help", options, raw) =>
       publish(HelpRequest(options.headOption, raw.channel))

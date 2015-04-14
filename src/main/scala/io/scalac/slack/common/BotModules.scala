@@ -1,7 +1,7 @@
 package io.scalac.slack.common
 
 import akka.actor.{ActorContext, ActorRef, Props}
-import io.scalac.slack.Config
+import io.scalac.slack.{SlackBot, MessageEventBus, Config}
 import io.scalac.slack.bots._
 import io.scalac.slack.bots.digest.{DigestRepository, DigestBot}
 import io.scalac.slack.bots.feedback.{FeedbackRepository, FeedbackBot}
@@ -15,6 +15,8 @@ import io.scalac.slack.bots.twitter.{TwitterRepository, TwitterMessenger, Twitte
 object BotModules {
 
   def registerModules(context: ActorContext, websocketClient: ActorRef) = {
+
+    implicit val bus: MessageEventBus = SlackBot.eventBus
 
     val loggingBot = context.actorOf(Props[LoggingBot], "loggingBot")
     val pingpongBot = context.actorOf(Props[PingPongBot], "pingpongBot")

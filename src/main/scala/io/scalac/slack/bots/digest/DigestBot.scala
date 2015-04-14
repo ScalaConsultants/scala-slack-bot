@@ -1,5 +1,6 @@
 package io.scalac.slack.bots.digest
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.common.{AbstractRepository, Command, OutboundMessage}
 import io.scalac.slack.bots.AbstractBot
 import org.joda.time.{DateTimeZone, DateTime}
@@ -10,7 +11,7 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class DigestBot(linkRepo: DigestRepository) extends AbstractBot {
+class DigestBot(linkRepo: DigestRepository)(implicit override val bus: MessageEventBus) extends AbstractBot {
 
   def put(linkToStore: String, user: String) = linkRepo.create(linkToStore, user)
   def get() = linkRepo.read()

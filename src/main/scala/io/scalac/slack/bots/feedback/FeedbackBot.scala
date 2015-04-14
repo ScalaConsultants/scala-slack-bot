@@ -1,5 +1,6 @@
 package io.scalac.slack.bots.feedback
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
@@ -10,7 +11,7 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class FeedbackBot(repo: FeedbackRepository) extends AbstractBot {
+class FeedbackBot(repo: FeedbackRepository)(implicit override val bus: MessageEventBus) extends AbstractBot {
   log.debug(s"Starting $this")
 
   def act = {

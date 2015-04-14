@@ -1,5 +1,6 @@
 package io.scalac.slack.bots.tags
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common._
 import org.joda.time.{DateTime, DateTimeZone}
@@ -10,7 +11,7 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class TagsBot(tagsRepo: TagsRepository) extends AbstractBot {
+class TagsBot(tagsRepo: TagsRepository)(implicit override val bus: MessageEventBus) extends AbstractBot {
 
   def act = {
     case BaseMessage(fullMsg, channel, user, _, _) if fullMsg.contains("[") && fullMsg.contains("]") =>

@@ -1,41 +1,18 @@
 package io.scalac.slack.bots.repl
 
-import akka.actor.{ActorRef, Actor, Props, ActorSystem}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import io.scalac.slack.SlackBot
+import akka.actor.{Props, ActorSystem}
+import akka.testkit.TestKit
+import io.scalac.slack.{MessageEventBus, BotTest}
 import io.scalac.slack.common._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfterAll, WordSpecLike, Matchers}
 import scala.concurrent.duration._
 import org.mockito.Mockito._
-import org.mockito.Matchers._
 
-class ReplTest (_system: ActorSystem) extends TestKit(_system) with ImplicitSender with Matchers with WordSpecLike with BeforeAndAfterAll with MockitoSugar {
+class ReplBotTest (_system: ActorSystem) extends TestKit(_system) with BotTest {
   def this() = this(ActorSystem("ReplBotTestSystem"))
 
-  val theProbe = TestProbe()
+  override val testBus: MessageEventBus = new MessageEventBus // mock[MessageEventBus]
 
-  def getEchoSubscriber = {
-    system.actorOf(Props(new Actor {
-      def receive = {
-        case msg =>
-          theProbe.ref ! msg
-      }
-    }))
-  }
-
-  def matrix(bot: Props)(f: (ActorRef) => Unit) = {
-    implicit val eventBus = SlackBot.eventBus
-    val echo = getEchoSubscriber
-    val entry = system.actorOf(bot)
-    eventBus.subscribe(echo, Incoming)
-    eventBus.subscribe(echo, Outgoing)
-    f(entry)
-  }
-
-  override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
-
-  def botUnderTest(r: Repl) = Props(classOf[ReplBot], r)
+  def botUnderTest(r: Repl) = Props(classOf[ReplBot], r, testBus)
 
   "Repl" should {
     "allow to reset the repl" in {

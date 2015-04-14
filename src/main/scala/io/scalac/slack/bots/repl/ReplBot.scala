@@ -1,5 +1,6 @@
 package io.scalac.slack.bots.repl
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.{AbstractBot, IncomingMessageListener}
 import io.scalac.slack.common.{OutboundMessage, Command}
 
@@ -10,7 +11,7 @@ import java.io.PrintWriter
 /**
  * Maintainer: Patryk
  */
-class ReplBot(interpreter: Repl) extends AbstractBot {
+class ReplBot(interpreter: Repl)(implicit override val bus: MessageEventBus) extends AbstractBot {
 
   log.debug(s"Starting $this")
 
