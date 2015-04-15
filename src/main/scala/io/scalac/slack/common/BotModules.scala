@@ -20,10 +20,10 @@ object BotModules {
 
     val loggingBot = context.actorOf(Props[LoggingBot], "loggingBot")
     val pingpongBot = context.actorOf(Props[PingPongBot], "pingpongBot")
-    val digestBot = context.actorOf(Props(classOf[DigestBot], new DigestRepository()), "digestBot")
+    val digestBot = context.actorOf(Props(classOf[DigestBot], new DigestRepository(), bus), "digestBot")
     val commandProcessor = context.actorOf(Props[CommandsRecognizerBot], "commandProcessor")
-    val helloBot = context.actorOf(Props[HelloBot], "helloBot")
-    val replBot =  context.actorOf(Props(classOf[ReplBot], new Repl(Config.scalaLibraryPath)), "replBot")
+    val helloBot = context.actorOf(Props(classOf[HelloBot], bus),  "helloBot")
+    val replBot =  context.actorOf(Props(classOf[ReplBot], new Repl(Config.scalaLibraryPath), bus), "replBot")
     val twitterBot =  context.actorOf(
       Props(classOf[TwitterBot],
         Config.twitterGuardians,
@@ -31,12 +31,13 @@ object BotModules {
           Config.consumerKeySecret,
           Config.accessToken,
           Config.accessTokenSecret),
-        new TwitterRepository()),
+        new TwitterRepository(),
+        bus),
       "twitterBot"
     )
-    val tagBot = context.actorOf(Props(classOf[TagsBot], new TagsRepository()), "tagBot")
-    val feedbackBot = context.actorOf(Props(classOf[FeedbackBot], new FeedbackRepository()), "feedbackBot")
-    val helpBot = context.actorOf(Props[HelpBot], "helpBot")
+    val tagBot = context.actorOf(Props(classOf[TagsBot], new TagsRepository(), bus), "tagBot")
+    val feedbackBot = context.actorOf(Props(classOf[FeedbackBot], new FeedbackRepository(), bus), "feedbackBot")
+    val helpBot = context.actorOf(Props(classOf[HelpBot], bus), "helpBot")
     val importantMessagebot = context.actorOf(Props[ImportantMessageBot])
   }
 }

@@ -24,7 +24,8 @@ class ImportantMessageBot extends AbstractBot {
 
   }
 
+  //TODO
   override val bus: MessageEventBus = SlackBot.eventBus
 
-  override def help(channel: String): OutboundMessage = OutboundMessage(channel, "")
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, "DUPA9")
 }
