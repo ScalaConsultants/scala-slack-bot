@@ -11,7 +11,7 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class FeedbackBot(repo: FeedbackRepository)(implicit override val bus: MessageEventBus) extends AbstractBot {
+class FeedbackBot(repo: FeedbackRepository, override val bus: MessageEventBus) extends AbstractBot {
   log.debug(s"Starting $this")
 
   def act = {

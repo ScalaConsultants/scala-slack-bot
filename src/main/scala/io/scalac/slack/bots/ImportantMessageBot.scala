@@ -27,5 +27,6 @@ class ImportantMessageBot extends AbstractBot {
   //TODO
   override val bus: MessageEventBus = SlackBot.eventBus
 
-  override def help(channel: String): OutboundMessage = OutboundMessage(channel, "DUPA9")
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"*${name}* is used for sending important messages \\n " +
+    s"`important {message}` or starting with exclamation mark will make the message to become highlighted")
 }

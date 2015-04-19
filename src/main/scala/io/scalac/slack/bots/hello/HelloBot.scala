@@ -10,7 +10,7 @@ import scala.util.Random
 /**
  * Maintainer: Mario
  */
-class HelloBot(implicit override val bus: MessageEventBus) extends AbstractBot {
+class HelloBot(override val bus: MessageEventBus) extends AbstractBot {
   val welcomes = List("what's up?", "how's going?", "ready for work?", "nice to see you")
 
   def welcome = Random.shuffle(welcomes).head

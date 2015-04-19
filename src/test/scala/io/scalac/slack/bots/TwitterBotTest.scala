@@ -13,7 +13,7 @@ class TwitterBotTest (_system: ActorSystem) extends TestKit(_system) with BotTes
 
   val people = "ppl"
 
-  override val testBus: MessageEventBus = new MessageEventBus // mock[MessageEventBus]
+  override val testBus: MessageEventBus = new MessageEventBus
   def botUnderTest(t: TwitterMessenger, r: TwitterRepository) = Props(classOf[TwitterBot], people, t, r, testBus)
 
   "TwitterBot" should {

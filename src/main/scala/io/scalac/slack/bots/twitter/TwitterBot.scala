@@ -13,8 +13,11 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class TwitterBot(peopleToInform: String, twitter: TwitterMessenger, repo: TwitterRepository)
-     (implicit override val bus: MessageEventBus) extends AbstractBot {
+class TwitterBot(
+    peopleToInform: String,
+    twitter: TwitterMessenger,
+    repo: TwitterRepository,
+    override val bus: MessageEventBus) extends AbstractBot {
 
   def saveToDb(msg: String, user: String) = repo.create(msg, user)
 

@@ -11,7 +11,7 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class TagsBot(tagsRepo: TagsRepository)(implicit override val bus: MessageEventBus) extends AbstractBot { //TODO: make the implicit magic a normal param
+class TagsBot(tagsRepo: TagsRepository, override val bus: MessageEventBus) extends AbstractBot {
 
   def act = {
     case BaseMessage(fullMsg, channel, user, _, _) if fullMsg.contains("[") && fullMsg.contains("]") =>

@@ -11,7 +11,7 @@ import java.io.PrintWriter
 /**
  * Maintainer: Patryk
  */
-class ReplBot(interpreter: Repl)(implicit override val bus: MessageEventBus) extends AbstractBot {
+class ReplBot(interpreter: Repl, override val bus: MessageEventBus) extends AbstractBot {
 
   log.debug(s"Starting $this")
 

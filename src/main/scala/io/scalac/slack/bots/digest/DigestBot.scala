@@ -11,7 +11,7 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class DigestBot(linkRepo: DigestRepository)(implicit override val bus: MessageEventBus) extends AbstractBot {
+class DigestBot(linkRepo: DigestRepository, override val bus: MessageEventBus) extends AbstractBot {
 
   def put(linkToStore: String, user: String) = linkRepo.create(linkToStore, user)
   def get() = linkRepo.read()

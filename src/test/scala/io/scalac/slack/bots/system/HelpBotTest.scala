@@ -2,7 +2,7 @@ package io.scalac.slack.bots.system
 
 import akka.actor.{ActorRef, Actor, Props, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import io.scalac.slack.SlackBot
+import io.scalac.slack.{MessageEventBus, SlackBot}
 import io.scalac.slack.common._
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike, Matchers}
 
@@ -16,6 +16,8 @@ class HelpBotTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSe
 
   val theProbe = TestProbe()
 
+  val testBus: MessageEventBus = SlackBot.eventBus // new MessageEventBus
+
   def getEchoSubscriber = {
     system.actorOf(Props(new Actor {
       def receive = {
@@ -28,7 +30,7 @@ class HelpBotTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSe
   def matrix()(f: (ActorRef) => Unit) = {
     implicit val eventBus = eb()
     val echo = getEchoSubscriber
-    val entry = system.actorOf(Props(new HelpBot))
+    val entry = system.actorOf(Props(classOf[HelpBot], testBus))
     eventBus.subscribe(echo, Incoming)
     eventBus.subscribe(echo, Outgoing)
     f(entry)

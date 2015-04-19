@@ -16,7 +16,7 @@ object BotModules {
 
   def registerModules(context: ActorContext, websocketClient: ActorRef) = {
 
-    implicit val bus: MessageEventBus = SlackBot.eventBus
+    val bus: MessageEventBus = SlackBot.eventBus
 
     val loggingBot = context.actorOf(Props[LoggingBot], "loggingBot")
     val pingpongBot = context.actorOf(Props[PingPongBot], "pingpongBot")
