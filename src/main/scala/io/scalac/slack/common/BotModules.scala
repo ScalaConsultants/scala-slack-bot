@@ -38,6 +38,6 @@ object BotModules {
     val tagBot = context.actorOf(Props(classOf[TagsBot], new TagsRepository(), bus), "tagBot")
     val feedbackBot = context.actorOf(Props(classOf[FeedbackBot], new FeedbackRepository(), bus), "feedbackBot")
     val helpBot = context.actorOf(Props(classOf[HelpBot], bus), "helpBot")
-    val importantMessagebot = context.actorOf(Props[ImportantMessageBot])
+    val importantMessageBot = context.actorOf(Props[ImportantMessageBot], "importantMessageBot")
   }
 }

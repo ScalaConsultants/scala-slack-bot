@@ -7,14 +7,11 @@ import org.scalatest.{Matchers, FunSuite}
  */
 class MessageCounterTest extends FunSuite with Matchers {
 
-  test("message counter should still increment"){
+  test("message counter should still increment and reset "){
     MessageCounter.next should equal (1)
     MessageCounter.next should equal (2)
     MessageCounter.next should equal (3)
 
-  }
-
-  test("message counter should be able to reset"){
     MessageCounter.next should equal (4)
     MessageCounter.reset()
     MessageCounter.next should equal (1)
