@@ -1,7 +1,7 @@
 package io.scalac.slack.bots
 
 import akka.actor.{Actor, ActorLogging}
-import io.scalac.slack.SlackBot
+import io.scalac.slack.{MessageEventBus, SlackBot}
 import io.scalac.slack.common._
 import io.scalac.slack.common.{RichOutboundMessage, Outgoing, Incoming, MessageEvent}
 
@@ -9,7 +9,9 @@ import io.scalac.slack.common.{RichOutboundMessage, Outgoing, Incoming, MessageE
  * Created on 08.02.15 23:52
  */
 trait MessagePublisher {
-  def bus = SlackBot.eventBus
+//  def bus = SlackBot.eventBus
+
+  def bus: MessageEventBus
 
   def publish(event: MessageEvent) = {
     bus.publish(event)
@@ -39,7 +41,9 @@ abstract class OutgoingMessageListener extends MessageListener {
  * The class to extend when creating a bot.
  */
 abstract class AbstractBot extends IncomingMessageListener {
-  log.debug(s"Starting ${self.path.name}")
+  log.debug(s"Starting ${self.path.name} on $bus")
+
+  override val bus: MessageEventBus
 
   def name: String = self.path.name
 

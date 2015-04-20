@@ -1,7 +1,7 @@
 package io.scalac.slack.bots
 
 import akka.actor.{Actor, ActorLogging}
-import io.scalac.slack.SlackBot
+import io.scalac.slack.{MessageEventBus, SlackBot}
 import io.scalac.slack.common.{Incoming, UndefinedMessage}
 
 /**
@@ -14,4 +14,5 @@ class LoggingBot extends IncomingMessageListener{
     case ignored => //nothing special
   }
 
+  override def bus: MessageEventBus = SlackBot.eventBus
 }

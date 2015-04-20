@@ -1,5 +1,6 @@
 package io.scalac.slack.bots.repl
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.{AbstractBot, IncomingMessageListener}
 import io.scalac.slack.common.{OutboundMessage, Command}
 
@@ -10,12 +11,10 @@ import java.io.PrintWriter
 /**
  * Maintainer: Patryk
  */
-class ReplBot(scalaLibraryPath: String) extends AbstractBot {
+class ReplBot(interpreter: Repl, override val bus: MessageEventBus) extends AbstractBot {
 
   log.debug(s"Starting $this")
 
-  lazy val interpreter = new Repl(scalaLibraryPath)
-  
   def act = {
     case Command("repl", code, message) =>
       log.debug(s"Got x= repl $code from Slack")

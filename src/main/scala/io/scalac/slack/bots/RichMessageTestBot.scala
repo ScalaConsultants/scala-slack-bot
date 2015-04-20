@@ -1,5 +1,6 @@
 package io.scalac.slack.bots
 
+import io.scalac.slack.{SlackBot, MessageEventBus}
 import io.scalac.slack.common._
 
 /**
@@ -28,4 +29,6 @@ class RichMessageTestBot extends IncomingMessageListener {
       )
 
   }
+
+  override val bus: MessageEventBus = SlackBot.eventBus
 }

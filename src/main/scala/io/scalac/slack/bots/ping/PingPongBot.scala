@@ -2,6 +2,7 @@ package io.scalac.slack.bots.ping
 
 import java.util.concurrent.TimeUnit
 
+import io.scalac.slack.{SlackBot, MessageEventBus}
 import io.scalac.slack.bots.IncomingMessageListener
 import io.scalac.slack.common.{Ping, Pong}
 
@@ -30,4 +31,6 @@ class PingPongBot extends IncomingMessageListener {
    sendPing()
     super.preStart()
   }
+
+  override def bus: MessageEventBus = SlackBot.eventBus
 }

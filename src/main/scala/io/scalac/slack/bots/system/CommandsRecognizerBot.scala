@@ -1,6 +1,6 @@
 package io.scalac.slack.bots.system
 
-import io.scalac.slack.SlackBot
+import io.scalac.slack.{MessageEventBus, SlackBot}
 import io.scalac.slack.bots.IncomingMessageListener
 import io.scalac.slack.common.{BaseMessage, Command}
 
@@ -45,4 +45,6 @@ class CommandsRecognizerBot extends IncomingMessageListener {
         }
 
   }
+
+  override def bus: MessageEventBus = SlackBot.eventBus
 }

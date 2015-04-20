@@ -2,7 +2,7 @@ package io.scalac.slack.bots.hello
 
 import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{Command, OutboundMessage}
-import io.scalac.slack.SlackBot
+import io.scalac.slack.{MessageEventBus, SlackBot}
 import io.scalac.slack.common.{BaseMessage, Command, OutboundMessage}
 
 import scala.util.Random
@@ -10,7 +10,7 @@ import scala.util.Random
 /**
  * Maintainer: Mario
  */
-class HelloBot extends AbstractBot {
+class HelloBot(override val bus: MessageEventBus) extends AbstractBot {
   val welcomes = List("what's up?", "how's going?", "ready for work?", "nice to see you")
 
   def welcome = Random.shuffle(welcomes).head

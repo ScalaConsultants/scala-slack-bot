@@ -1,5 +1,6 @@
 package io.scalac.slack.bots.twitter
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.{AbstractBot, IncomingMessageListener}
 import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
@@ -12,7 +13,11 @@ import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 /**
  * Maintainer: Patryk
  */
-class TwitterBot(peopleToInform: String, twitter: TwitterMessenger, repo: TwitterRepository) extends AbstractBot {
+class TwitterBot(
+    peopleToInform: String,
+    twitter: TwitterMessenger,
+    repo: TwitterRepository,
+    override val bus: MessageEventBus) extends AbstractBot {
 
   def saveToDb(msg: String, user: String) = repo.create(msg, user)
 
