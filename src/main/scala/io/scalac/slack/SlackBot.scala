@@ -3,11 +3,9 @@ package io.scalac.slack
 import akka.actor.{ActorSystem, Props}
 import akka.event.Logging
 import io.scalac.slack.api.{BotInfo, Start}
+import io.scalac.slack.common.DefaultBotBundle
 import io.scalac.slack.websockets.{WSActor, WebSocket}
 
-/**
- * Created on 20.01.15 21:51
- */
 object SlackBot {
 
   val system = ActorSystem("SlackBotSystem")
@@ -15,7 +13,7 @@ object SlackBot {
   val eventBus = new MessageEventBus
 
   val websocketClient = system.actorOf(Props[WSActor], "ws-actor")
-  val slackBot = system.actorOf(Props[SlackBotActor], "slack-bot")
+  val slackBot = system.actorOf(Props(classOf[SlackBotActor], new DefaultBotBundle), "slack-bot")
 
   var botInfo: Option[BotInfo] = None
 

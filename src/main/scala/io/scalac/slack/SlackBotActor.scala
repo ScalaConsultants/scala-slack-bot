@@ -10,10 +10,7 @@ import io.scalac.slack.websockets.WebSocket
 
 import scala.concurrent.duration._
 
-/**
- * Created on 20.01.15 23:59
- */
-class SlackBotActor extends Actor with ActorLogging {
+class SlackBotActor(modules: BotModules) extends Actor with ActorLogging {
 
   import context.{dispatcher, system}
 
@@ -58,7 +55,7 @@ class SlackBotActor extends Actor with ActorLogging {
     case bi @ BotInfo(_, _) =>
       SlackBot.botInfo = Some(bi)
     case RegisterModules =>
-      BotModules.registerModules(context, websocketClient)
+      modules.registerModules(context, websocketClient)
     case MigrationInProgress =>
       log.warning("MIGRATION IN PROGRESS, next try for 10 seconds")
       system.scheduler.scheduleOnce(10.seconds, self, Start)

@@ -2,7 +2,6 @@ package io.scalac.slack
 
 import akka.actor.{ActorRef, Actor, Props}
 import akka.testkit.{TestProbe, TestKit, ImplicitSender}
-import io.scalac.slack.MessageEventBus
 import io.scalac.slack.common.{Outgoing, Incoming}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
