@@ -1,20 +1,20 @@
 package io.scalac.slack.common
 
 import akka.actor.{ActorContext, ActorRef, Props}
-import io.scalac.slack.{SlackBot, MessageEventBus, Config}
-import io.scalac.slack.bots._
+import io.scalac.slack.bots.{ImportantMessageBot, LoggingBot}
 import io.scalac.slack.bots.digest.{DigestRepository, DigestBot}
 import io.scalac.slack.bots.feedback.{FeedbackRepository, FeedbackBot}
 import io.scalac.slack.bots.hello.HelloBot
 import io.scalac.slack.bots.ping.PingPongBot
 import io.scalac.slack.bots.repl.{Repl, ReplBot}
-import io.scalac.slack.bots.system.{CommandsRecognizerBot, HelpBot}
+import io.scalac.slack.bots.system.{HelpBot, CommandsRecognizerBot}
 import io.scalac.slack.bots.tags.{TagsRepository, TagsBot}
 import io.scalac.slack.bots.twitter.{TwitterRepository, TwitterMessenger, TwitterBot}
+import io.scalac.slack.{BotModules, Config, MessageEventBus, SlackBot}
 
-object BotModules {
+class DefaultBotBundle extends BotModules {
 
-  def registerModules(context: ActorContext, websocketClient: ActorRef) = {
+  override def registerModules(context: ActorContext, websocketClient: ActorRef) = {
 
     val bus: MessageEventBus = SlackBot.eventBus
 

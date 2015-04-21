@@ -7,7 +7,7 @@ import io.scalac.slack.common._
  * Created on 08.02.15 23:00
  *
  */
-class OutgoingRichMessageProcessor(apiActor: ActorRef) extends Actor with ActorLogging {
+class OutgoingRichMessageProcessor(apiActor: ActorRef, eventBus: MessageEventBus) extends Actor with ActorLogging {
 
   override def receive: Receive = {
 
@@ -21,6 +21,6 @@ class OutgoingRichMessageProcessor(apiActor: ActorRef) extends Actor with ActorL
 
   @throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
-    SlackBot.eventBus.subscribe(self, Outgoing)
+    eventBus.subscribe(self, Outgoing)
   }
 }

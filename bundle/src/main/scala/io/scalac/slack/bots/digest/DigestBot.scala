@@ -1,8 +1,8 @@
 package io.scalac.slack.bots.digest
 
 import io.scalac.slack.MessageEventBus
-import io.scalac.slack.common.{AbstractRepository, Command, OutboundMessage}
 import io.scalac.slack.bots.AbstractBot
+import io.scalac.slack.common.{AbstractRepository, Command, OutboundMessage}
 import org.joda.time.{DateTimeZone, DateTime}
 
 import scala.slick.driver.H2Driver.simple._

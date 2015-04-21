@@ -2,8 +2,8 @@ package io.scalac.slack.bots
 
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.TestKit
-import io.scalac.slack.{MessageEventBus, BotTest}
-import io.scalac.slack.bots.twitter.{TwitterBot, TwitterRepository, TwitterMessenger}
+import io.scalac.slack.MessageEventBus
+import io.scalac.slack.bots.twitter.{TwitterRepository, TwitterMessenger, TwitterBot}
 import io.scalac.slack.common.{OutboundMessage, Command, BaseMessage}
 import org.mockito.Mockito._
 import scala.concurrent.duration._

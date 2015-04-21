@@ -9,7 +9,7 @@ import io.scalac.slack.websockets.WebSocket
  * Outgoing message protocol should change received
  * protocol into string and send it to websocket
  */
-class OutgoingMessageProcessor(wsActor: ActorRef) extends Actor with ActorLogging {
+class OutgoingMessageProcessor(wsActor: ActorRef, eventBus: MessageEventBus) extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case Ping =>
@@ -24,6 +24,6 @@ class OutgoingMessageProcessor(wsActor: ActorRef) extends Actor with ActorLoggin
 
   @throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
-    SlackBot.eventBus.subscribe(self, Outgoing)
+    eventBus.subscribe(self, Outgoing)
   }
 }

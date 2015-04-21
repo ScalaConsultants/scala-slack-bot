@@ -1,7 +1,7 @@
 package io.scalac.slack.bots.repl
 
 import io.scalac.slack.MessageEventBus
-import io.scalac.slack.bots.{AbstractBot, IncomingMessageListener}
+import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{OutboundMessage, Command}
 
 import scala.tools.nsc.interpreter.IMain

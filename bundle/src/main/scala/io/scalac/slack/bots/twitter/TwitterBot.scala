@@ -1,7 +1,7 @@
 package io.scalac.slack.bots.twitter
 
 import io.scalac.slack.MessageEventBus
-import io.scalac.slack.bots.{AbstractBot, IncomingMessageListener}
+import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
 import twitter4j.TwitterFactory

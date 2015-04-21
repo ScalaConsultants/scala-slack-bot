@@ -43,7 +43,7 @@ class IncomingMessageProcessorTest(_system: ActorSystem) extends TestKit(_system
   def matrix()(f: (ActorRef) => Unit) = {
     implicit val eventBus = eB()
     val echo = getEchoSubscriber
-    val entry = system.actorOf(Props(new IncomingMessageProcessor))
+    val entry = system.actorOf(Props(classOf[IncomingMessageProcessor], eventBus))
     eventBus.subscribe(echo, Incoming)
     f(entry)
   }

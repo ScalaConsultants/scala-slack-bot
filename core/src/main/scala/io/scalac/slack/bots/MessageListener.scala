@@ -1,9 +1,8 @@
 package io.scalac.slack.bots
 
 import akka.actor.{Actor, ActorLogging}
-import io.scalac.slack.{MessageEventBus, SlackBot}
-import io.scalac.slack.common._
-import io.scalac.slack.common.{RichOutboundMessage, Outgoing, Incoming, MessageEvent}
+import io.scalac.slack.MessageEventBus
+import io.scalac.slack.common.{Incoming, MessageEvent, Outgoing, RichOutboundMessage, _}
 
 /**
  * Created on 08.02.15 23:52

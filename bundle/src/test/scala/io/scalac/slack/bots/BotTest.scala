@@ -1,8 +1,9 @@
-package io.scalac.slack
+package io.scalac.slack.bots
 
-import akka.actor.{ActorRef, Actor, Props}
-import akka.testkit.{TestProbe, TestKit, ImplicitSender}
-import io.scalac.slack.common.{Outgoing, Incoming}
+import akka.actor.{Actor, ActorRef, Props}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import io.scalac.slack.MessageEventBus
+import io.scalac.slack.common.{Incoming, Outgoing}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 

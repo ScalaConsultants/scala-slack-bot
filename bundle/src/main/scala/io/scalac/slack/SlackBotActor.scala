@@ -5,17 +5,16 @@ import java.util.concurrent.TimeUnit
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.util.Timeout
 import io.scalac.slack.api._
-import io.scalac.slack.common._
 import io.scalac.slack.websockets.WebSocket
 
 import scala.concurrent.duration._
 
-class SlackBotActor(modules: BotModules) extends Actor with ActorLogging {
+class SlackBotActor(modules: BotModules, eventBus: MessageEventBus) extends Actor with ActorLogging {
 
   import context.{dispatcher, system}
 
   val api = context.actorOf(Props[ApiActor])
-  val richProcessor = context.actorOf(Props(new OutgoingRichMessageProcessor(api)))
+  val richProcessor = context.actorOf(Props(classOf[OutgoingRichMessageProcessor], api, eventBus))
 
   var errors = 0
 

@@ -1,10 +1,10 @@
 package io.scalac.slack.bots.system
 
-import akka.actor.{ActorRef, Actor, Props, ActorSystem}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import io.scalac.slack.{BotTest, MessageEventBus, SlackBot}
+import akka.actor.{Props, ActorSystem}
+import akka.testkit.TestKit
+import io.scalac.slack.bots.BotTest
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.common._
-import org.scalatest.{BeforeAndAfterAll, WordSpecLike, Matchers}
 
 import scala.concurrent.duration._
 

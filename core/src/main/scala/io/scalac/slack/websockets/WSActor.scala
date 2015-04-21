@@ -2,7 +2,7 @@ package io.scalac.slack.websockets
 
 import akka.actor.{Actor, Props}
 import akka.io.IO
-import io.scalac.slack.{SlackBot, IncomingMessageProcessor, Config, OutgoingMessageProcessor}
+import io.scalac.slack._
 import spray.can.Http
 import spray.can.server.UHttp
 import spray.can.websocket.WebSocketClientWorker
@@ -12,13 +12,13 @@ import spray.json._
 /**
  * Created on 28.01.15 19:45
  */
-class WSActor extends Actor with WebSocketClientWorker {
+class WSActor(eventBus: MessageEventBus) extends Actor with WebSocketClientWorker {
 
   override def receive = connect orElse handshaking orElse closeLogic
 
-  implicit val eventBus = SlackBot.eventBus
-  val out = context.actorOf(Props(new OutgoingMessageProcessor(self)))
-  val in = context.actorOf(Props(new IncomingMessageProcessor))
+//  implicit val eventBus = SlackBot.eventBus
+  val out = context.actorOf(Props(classOf[OutgoingMessageProcessor], self, eventBus))
+  val in = context.actorOf(Props(classOf[IncomingMessageProcessor], eventBus))
 
   private def connect(): Receive = {
     case WebSocket.Connect(host, port, resource, ssl) =>

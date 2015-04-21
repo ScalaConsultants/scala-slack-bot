@@ -9,7 +9,7 @@ import spray.json._
  * Incoming message processor should parse incoming string
  * and change into proper protocol
  */
-class IncomingMessageProcessor(implicit eventBus: MessageEventBus) extends Actor with ActorLogging {
+class IncomingMessageProcessor(eventBus: MessageEventBus) extends Actor with ActorLogging {
 
   import io.scalac.slack.common.MessageJsonProtocol._
 
