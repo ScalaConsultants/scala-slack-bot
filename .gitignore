@@ -1,2 +1,5 @@
 .idea/
 src/main/resources/secret.conf
+target
+core/target
+bundle/target
