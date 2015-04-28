@@ -23,7 +23,7 @@ class CommandsRecognizerBot extends IncomingMessageListener {
       def changeIntoCommand(pattern: String): Boolean = {
         if (text.trim.startsWith(pattern)) {
           val tokenized = text.trim.drop(pattern.length).trim.split("\\s")
-          publish(Command(tokenized.head, tokenized.tail.toList, bm))
+          publish(Command(tokenized.head, tokenized.tail.toList.filter(_.nonEmpty), bm))
           true
         }
         false

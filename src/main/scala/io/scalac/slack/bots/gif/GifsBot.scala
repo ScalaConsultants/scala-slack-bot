@@ -7,9 +7,6 @@ import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 import scala.util.Random
 
-/**
- * Created on 09.04.15 12:12
- */
 class GifsBot(gifsRepo: GifsRepository) extends AbstractBot {
   override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"*$name* is used for storing useful gifs \\n " +
     s"Add image to repository for your future uses \\n" +
@@ -37,7 +34,6 @@ class GifsBot(gifsRepo: GifsRepository) extends AbstractBot {
           if (gifList.nonEmpty) {
             val tagged = gifList(Random.nextInt(gifList.size))
             publish(
-
               RichOutboundMessage(message.channel, List(Attachment(ImageUrl(tagged), Text(tag))))
             )
           }
@@ -68,11 +64,13 @@ class GifsRepository() extends AbstractRepository {
   //public methods
   def insert(gifTag: String, gifUrl: String) = {
     db.withDynSession {
-      gifTags.map(gt => (gt.name, gt.url)) +=(gifTag, gifUrl)
+      gifTags.map(gt => (gt.name, gt.url)) +=(gifTag, strip(gifUrl))
     }
   }
 
-  def find(tagName: String) = db.withDynSession(gifTags.filter(_.name === tagName).list.map(_._3))
+  def find(tagName: String) = db.withDynSession(gifTags.filter(_.name === tagName).list.map(c => strip(c._3)))
 
   def tagList: List[String] = db.withDynSession(gifTags.map(_.name).list.distinct)
+
+  def strip(url: String): String = url.trim.replaceAll("[<>]", "")
 }
