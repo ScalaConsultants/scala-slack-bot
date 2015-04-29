@@ -4,9 +4,6 @@ import io.scalac.slack.bots.IncomingMessageListener
 import io.scalac.slack.{MessageEventBus, SlackBot}
 import io.scalac.slack.common.{BaseMessage, Command}
 
-/**
- * Created on 13.02.15 23:36
- */
 class CommandsRecognizerBot extends IncomingMessageListener {
 
   val commandChar = '$'
@@ -23,7 +20,7 @@ class CommandsRecognizerBot extends IncomingMessageListener {
       def changeIntoCommand(pattern: String): Boolean = {
         if (text.trim.startsWith(pattern)) {
           val tokenized = text.trim.drop(pattern.length).trim.split("\\s")
-          publish(Command(tokenized.head, tokenized.tail.toList, bm))
+          publish(Command(tokenized.head, tokenized.tail.toList.filter(_.nonEmpty), bm))
           true
         }
         false
