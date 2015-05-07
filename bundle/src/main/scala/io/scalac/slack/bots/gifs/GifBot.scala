@@ -19,26 +19,27 @@ class GifsBot(gifsRepo: GifsRepository) extends AbstractBot {
   )
 
   override def act: Receive = {
-    case Command("gif", com :: params, message) =>
-      com match {
-        case "list" =>
-          val tags = gifsRepo.tagList
-          publish(OutboundMessage(message.channel, "Images stored under tags: " + tags.mkString(", ")))
-        case "store" =>
-          val gifUrl = params.head
-          params.tail.distinct.foreach { tag =>
-            println(s"GIF TAG ADDED: url[$gifUrl], tag:[$tag]")
-            gifsRepo.insert(tag, gifUrl)
-          }
 
-        case tag =>
-          val gifList = gifsRepo.find(tag)
-          if (gifList.nonEmpty) {
-            val tagged = gifList(Random.nextInt(gifList.size))
-            publish(
-              RichOutboundMessage(message.channel, List(Attachment(ImageUrl(tagged), Text(tag))))
-            )
-          }
+    case Command("gif", "list" :: params, message) =>
+      val tags = gifsRepo.tagList
+      publish(OutboundMessage(message.channel, "Images stored under tags: " + tags.mkString(", ")))
+    case Command("gif", "store" :: params, message) =>
+      val gifUrl = params.head
+      params.tail.distinct.foreach { tag =>
+        println(s"GIF TAG ADDED: url[$gifUrl], tag:[$tag]")
+        gifsRepo.insert(tag, gifUrl)
+        publish(OutboundMessage(message.channel, s"Image stored under tag: [$tag]"))
+      }
+    case Command("gif", "help" :: params, message) =>
+      publish(help(message.channel))
+
+    case Command(command, tag :: params, message) if command.matches("gif|show") =>
+      val gifList = gifsRepo.find(tag)
+      if (gifList.nonEmpty) {
+        val tagged = gifList(Random.nextInt(gifList.size))
+        publish(
+          RichOutboundMessage(message.channel, List(Attachment(ImageUrl(tagged), Text(tag))))
+        )
       }
   }
 
