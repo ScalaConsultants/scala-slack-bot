@@ -46,7 +46,8 @@ class DefaultBotBundle extends BotModules {
       Props(
         classOf[RecruitmentBot],
         Config.asanaKey,
-        new AbstractHttpClient(Config.asanaBaseUrl)(context.system)
+        new AbstractHttpClient(Config.asanaBaseUrl)(context.system),
+        bus
       ), "recruitmentBot")
   }
 }

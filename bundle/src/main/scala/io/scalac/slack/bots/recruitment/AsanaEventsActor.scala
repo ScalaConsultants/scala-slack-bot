@@ -1,6 +1,6 @@
 package io.scalac.slack.bots.recruitment
 
-import akka.actor.{ActorSystem, Actor}
+import akka.actor.{ActorRef, ActorSystem, Actor}
 import akka.actor.Actor.Receive
 import io.scalac.slack.api.ResponseObject
 import io.scalac.slack.api.Unmarshallers._
@@ -15,10 +15,21 @@ import spray.json._
 
 case class StartObserving(interval: Double) // in seconds
 
-case class Events(data: JsObject) extends ResponseObject
+trait Measurable {
+  val level: Double // 0 - junior, 1 - medior, 3 - senior
+  val domain: Double // 0 - mobile, 1 - backend, 3 - frontend
+}
+
+case class TaskData(
+  name: String,
+  url: String,
+  level: Double,
+  domain: Double
+) extends Measurable
+case class Events(data: Seq[TaskData]) extends ResponseObject
 
 
-class AsanaEventsActor(asanaKey: String, client: AbstractHttpClient) extends Actor {
+class AsanaEventsActor(asanaKey: String, client: AbstractHttpClient, master: ActorRef) extends Actor {
 
   private case object Ask
 
@@ -26,8 +37,7 @@ class AsanaEventsActor(asanaKey: String, client: AbstractHttpClient) extends Act
 
   import context.dispatcher
 
-  import spray.client.pipelining
-
+  implicit val taskFormat = jsonFormat4(TaskData)
   implicit val eventsFormat = jsonFormat1(Events)
 
   override def receive: Receive = {
@@ -37,8 +47,10 @@ class AsanaEventsActor(asanaKey: String, client: AbstractHttpClient) extends Act
 
     case Ask =>
       println(s"Asking Asana")
-      val events = client.get[Events]("/users/me", defaultHeaders)
-      println(s"Received $events")
+      client.get[Events]("/users/me", defaultHeaders).map(events => {
+        println(s"Received $events")
+        master ! events
+      })
   }
 }
 
@@ -48,10 +60,10 @@ class AbstractHttpClient(baseUrl: String)(implicit val system: ActorSystem) {
 
   import system.dispatcher
 
-  val pipeline: HttpRequest => Future[HttpResponse] = (
-    addHeader("Authorization", "MlYxSzNydVEuamxIQWh0V09TZzV0dFc3WnA5NHJIelg=")
-      ~> sendReceive
-  )
+//  val pipeline: HttpRequest => Future[HttpResponse] = (
+//    addHeader("Authorization", "MlYxSzNydVEuamxIQWh0V09TZzV0dFc3WnA5NHJIelg=")
+//      ~> sendReceive
+//  )
 
   def get[T <: ResponseObject](
     endpoint: String,
@@ -75,12 +87,14 @@ class AbstractHttpClient(baseUrl: String)(implicit val system: ActorSystem) {
 
     println(s"Querying for $url")
 
-    val futureResponse = pipeline(HttpRequest(method, url)).map(_.entity.asString)
-    (for {
-      responseJson <- futureResponse
-      response = {println(s"=== Reposne $responseJson"); JsonParser(responseJson).convertTo[T]}
-    } yield response) recover {
-      case cause => throw new Exception("Something went wrong", cause)
-    }
+//    val futureResponse = pipeline(HttpRequest(method, url)).map(_.entity.asString)
+//    (for {
+//      responseJson <- futureResponse
+//      response = {println(s"=== Reposne $responseJson"); JsonParser(responseJson).convertTo[T]}
+//    } yield response) recover {
+//      case cause => throw new Exception("Something went wrong", cause)
+//    }
+    
+    Future { Events(List(TaskData("John Doe", "Asana url", 3, 0.5))).asInstanceOf[T] }
   }
 }
