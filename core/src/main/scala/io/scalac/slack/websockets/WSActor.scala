@@ -9,14 +9,11 @@ import spray.can.websocket.WebSocketClientWorker
 import spray.can.websocket.frame.{CloseFrame, StatusCode, TextFrame}
 import spray.http.{HttpHeaders, HttpMethods, HttpRequest}
 import spray.json._
-/**
- * Created on 28.01.15 19:45
- */
+
 class WSActor(eventBus: MessageEventBus) extends Actor with WebSocketClientWorker {
 
   override def receive = connect orElse handshaking orElse closeLogic
 
-//  implicit val eventBus = SlackBot.eventBus
   val out = context.actorOf(Props(classOf[OutgoingMessageProcessor], self, eventBus))
   val in = context.actorOf(Props(classOf[IncomingMessageProcessor], eventBus))
 

@@ -2,10 +2,7 @@ package io.scalac.slack.api
 
 import io.scalac.slack.models.{Channel, SlackUser}
 
-/**
- * Created on 21.01.15 22:28
- */
-sealed trait ResponseObject
+trait ResponseObject
 
 case class ApiTestResponse(ok: Boolean, error: Option[String], args: Option[Map[String, String]]) extends ResponseObject
 

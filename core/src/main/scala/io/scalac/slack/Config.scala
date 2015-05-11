@@ -18,8 +18,11 @@ object Config {
   def scalaLibraryPath = config.getString("scalaLibraryPath")
 
   def consumerKey: String = config.getString("twitter.consumerKey")
-  def consumerKeySecret: String  = config.getString("twitter.consumerKeySecret")
   def accessToken: String  = config.getString("twitter.accessToken")
+  def consumerKeySecret: String  = config.getString("twitter.consumerKeySecret")
   def accessTokenSecret: String  = config.getString("twitter.accessTokenSecret")
   def twitterGuardians: String  = config.getString("twitter.guardians")
+
+  def asanaKey: String = config.getString("asana.key")
+  def asanaBaseUrl: String = config.getString("asana.baseUrl")
 }

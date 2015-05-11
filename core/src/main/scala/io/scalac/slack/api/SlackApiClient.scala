@@ -12,7 +12,7 @@ import scala.concurrent.Future
 /**
  * Created on 29.01.15 22:43
  */
-object SlackApiClient extends ApiClient{
+object SlackApiClient extends ApiClient {
 
   val log = Logging
 
