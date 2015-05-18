@@ -4,7 +4,7 @@ import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
-import twitter4j.TwitterFactory
+import twitter4j.{Status, TwitterFactory}
 import twitter4j.conf.ConfigurationBuilder
 
 import scala.slick.driver.H2Driver.simple._
@@ -27,9 +27,17 @@ class TwitterBot(
     case Command("twitter-post", twitText, message) =>
       val msg = twitText.mkString(" ")
       log.debug(s"Got x= twitter-post $msg from Slack")
-      twitter.post(msg)
+      val status = twitter.post(msg)
       saveToDb(msg, message.user)
-      publish(OutboundMessage(message.channel, s"$msg has been posted to Twitter! This is our ${countAll()} published Tweet $peopleToInform"))
+      publish(OutboundMessage(message.channel, buildMessage(msg, status)))
+  }
+
+  protected def buildMessage(msg: String, status: Status): String = {
+    s"'$msg' has been posted to Twitter! This is our ${countAll()} published Tweet $peopleToInform. The link is ${buildLink(status)}"
+  }
+
+  protected def buildLink(status: Status): String = {
+    s"https://twitter.com/${status.getUser.getId}/status/${status.getId}"
   }
 
   override def help(channel: String): OutboundMessage = OutboundMessage(channel,
@@ -52,9 +60,8 @@ class TwitterMessenger(
   private val tf = new TwitterFactory(cb.build())
   private val twitter = tf.getInstance()
 
-  def post(text: String): Boolean = {
+  def post(text: String): Status = {
     twitter.updateStatus(text)
-    true
   }
 }
 
