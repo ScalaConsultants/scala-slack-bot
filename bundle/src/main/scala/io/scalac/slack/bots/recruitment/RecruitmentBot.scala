@@ -18,7 +18,7 @@ class RecruitmentBot(asanaKey: String, httpClient: AbstractHttpClient, override 
     ), "asana-client"
   )
 
-  asana ! StartObserving(1000)
+  asana ! StartObserving(10000)
 
   val channel = "" //TODO: find recruitment channel id
 
@@ -28,7 +28,7 @@ class RecruitmentBot(asanaKey: String, httpClient: AbstractHttpClient, override 
   }
 
   override def act: Receive = {
-    case Events(e) =>
+    case AsanaTasks(e) =>
       println(s"Master received $e")
       println(s"Mapped is ${e.map( findReviewer )}")
       e.map( findReviewer ).map( publish(_) )
