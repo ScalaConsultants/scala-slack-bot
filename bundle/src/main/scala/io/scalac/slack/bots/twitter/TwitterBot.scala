@@ -24,12 +24,12 @@ class TwitterBot(
   def countAll() = repo.count()
 
   def act = {
-    case Command("twitter-post", twitText, message) =>
-      val msg = twitText.mkString(" ")
-      log.debug(s"Got x= twitter-post $msg from Slack")
-      val status = twitter.post(msg)
-      saveToDb(msg, message.user)
-      publish(OutboundMessage(message.channel, buildMessage(msg, status)))
+    case Command("twitter-post", params, message) =>
+      val formattedTweet = params.mkString(" ").replaceAll("\\\\@", "@").replaceAll("\\\\#", "#")
+      log.debug(s"Got x= twitter-post $formattedTweet from Slack")
+      val status = twitter.post(formattedTweet)
+      saveToDb(formattedTweet, message.user)
+      publish(OutboundMessage(message.channel, buildMessage(formattedTweet, status)))
   }
 
   protected def buildMessage(msg: String, status: Status): String = {
