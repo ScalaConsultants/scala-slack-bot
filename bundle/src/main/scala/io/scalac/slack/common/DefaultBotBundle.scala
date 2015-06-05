@@ -2,6 +2,7 @@ package io.scalac.slack.common
 
 import akka.actor.{ActorContext, ActorRef, Props}
 import io.scalac.slack.bots.gifs.{GifsBot, GifsRepository}
+import io.scalac.slack.bots.linkedin.{LinkedInRepository, LinkedInMessenger, LinkedInBot}
 import io.scalac.slack.bots.{ImportantMessageBot, LoggingBot}
 import io.scalac.slack.bots.digest.{DigestRepository, DigestBot}
 import io.scalac.slack.bots.feedback.{FeedbackRepository, FeedbackBot}
@@ -41,5 +42,15 @@ class DefaultBotBundle extends BotModules {
     val helpBot = context.actorOf(Props(classOf[HelpBot], bus), "helpBot")
     val importantMessageBot = context.actorOf(Props[ImportantMessageBot], "importantMessageBot")
     val gifBot = context.actorOf(Props(classOf[GifsBot], new GifsRepository()), "gifBot")
+    val linkedInBot =  context.actorOf(
+      Props(classOf[LinkedInBot],
+        new LinkedInMessenger(Config.consumerKey,
+          Config.consumerKeySecret,
+          Config.accessToken,
+          Config.accessTokenSecret),
+        new LinkedInRepository(),
+        bus),
+      "linkedinBot"
+    )
   }
 }

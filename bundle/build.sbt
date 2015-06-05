@@ -28,7 +28,9 @@ libraryDependencies ++= {
     "org.scala-lang" % "jline" % "2.10.2",
     "org.twitter4j" % "twitter4j-core" % "4.0.0",
     "com.typesafe.slick" %% "slick" % "2.1.0",
-    "com.h2database" % "h2" % "1.4.186"
+    "com.h2database" % "h2" % "1.4.186",
+    "com.googlecode.linkedin-j" % "linkedin-j-core" % "1.0.416",
+    "oauth.signpost" % "signpost-core" % "1.1"
   )
 }
 
