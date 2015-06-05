@@ -2,7 +2,7 @@ package io.scalac.slack.bots.twitter
 
 import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
-import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
+import io.scalac.slack.common.{BaseMessage, AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
 import twitter4j.{Status, TwitterFactory}
 import twitter4j.conf.ConfigurationBuilder
@@ -26,10 +26,27 @@ class TwitterBot(
   def act = {
     case Command("twitter-post", params, message) =>
       val formattedTweet = params.mkString(" ").replaceAll("\\\\@", "@").replaceAll("\\\\#", "#")
-      log.debug(s"Got x= twitter-post $formattedTweet from Slack")
-      val status = twitter.post(formattedTweet)
-      saveToDb(formattedTweet, message.user)
-      publish(OutboundMessage(message.channel, buildMessage(formattedTweet, status)))
+      val resultMessage: String = validateTweet(formattedTweet).getOrElse( postToTwitter(formattedTweet, message.user) )
+      publish(OutboundMessage(message.channel, resultMessage))
+  }
+
+  def postToTwitter(formattedTweet: String, byUser: String): String = {
+    log.debug(s"Got x= twitter-post $formattedTweet from Slack")
+    val status = twitter.post(formattedTweet)
+    saveToDb(formattedTweet, byUser)
+    val resultMessage = buildMessage(formattedTweet, status)
+    resultMessage
+  }
+
+  //None if correct, Some(readable error message) if invalid
+  def validateTweet(formattedTweet: String): Option[String] = {
+    val len = formattedTweet.length
+    val topicNum = formattedTweet.count(_ == '#')
+    val mentionNum = formattedTweet.count(_ == '@')
+
+    if(len >= 140 || topicNum == 0 || mentionNum == 0){
+      Some(s"Error During validation. The message is $len characters long (max 140). Contains $topicNum topics (#) and $mentionNum mentions (@)")
+    } else None
   }
 
   protected def buildMessage(msg: String, status: Status): String = {

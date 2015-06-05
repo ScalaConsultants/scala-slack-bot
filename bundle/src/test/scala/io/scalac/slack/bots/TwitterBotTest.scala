@@ -21,8 +21,9 @@ class TwitterBotTest (_system: ActorSystem) extends TestKit(_system) with BotTes
     "post to Twitter" in {
       val messenger = mock[TwitterMessenger]
       val repo = mock[TwitterRepository]
+
       val bot = botUnderTest(messenger, repo)
-      val msg = "twitter-msg"
+      val msg = "twitter-msg @wwwwwwwwweeeeeeeeerrff #wwwwwwweeeeeeeerrrrrffff"
       val userName = "author"
       val count = 1
 
@@ -47,5 +48,41 @@ class TwitterBotTest (_system: ActorSystem) extends TestKit(_system) with BotTes
         verify(repo).create(msg, userName)
       }
     }
+
+
+    "don't post too long tweets" in {
+      val messenger = mock[TwitterMessenger]
+      val repo = mock[TwitterRepository]
+
+      val bot = botUnderTest(messenger, repo)
+      val msg = "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0"
+
+      matrix(bot) { entry =>
+        val base = BaseMessage(text = msg, channel = "channel", user = "", ts = "", edited = false)
+
+        entry ! Command("twitter-post", List(msg), base)
+
+        verifyZeroInteractions(messenger)
+        verifyZeroInteractions(repo)
+      }
+    }
+
+    "don't post without mentions or tpics" in {
+      val messenger = mock[TwitterMessenger]
+      val repo = mock[TwitterRepository]
+
+      val bot = botUnderTest(messenger, repo)
+      val msg = ""
+      
+      matrix(bot) { entry =>
+        val base = BaseMessage(text = msg, channel = "channel", user = "", ts = "", edited = false)
+
+        entry ! Command("twitter-post", List(msg), base)
+
+        verifyZeroInteractions(messenger)
+        verifyZeroInteractions(repo)
+      }
+    }
+
   }
 }
