@@ -1,14 +1,18 @@
 package io.scalac.slack.bots.twitter
 
+import java.io.InputStream
+import java.net.URL
+
 import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
-import io.scalac.slack.common.{BaseMessage, AbstractRepository, OutboundMessage, Command}
+import io.scalac.slack.common.{AbstractRepository, OutboundMessage, Command}
 import org.joda.time.{DateTimeZone, DateTime}
-import twitter4j.{Status, TwitterFactory}
+import twitter4j.{StatusUpdate, Status, TwitterFactory}
 import twitter4j.conf.ConfigurationBuilder
 
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
+import scala.util.Try
 
 /**
  * Maintainer: Patryk
@@ -24,36 +28,59 @@ class TwitterBot(
   def countAll() = repo.count()
 
   def act = {
-    case Command("twitter-post", params, message) =>
-      val formattedTweet = params.mkString(" ").replaceAll("\\\\@", "@").replaceAll("\\\\#", "#")
+    case Command("twitter-post", tweetText, message) =>
+      val formattedTweet = formatMessage(tweetText)
+      log.debug(s"Got x= twitter-post $formattedTweet from Slack")
+
       val resultMessage: String = validateTweet(formattedTweet).getOrElse( postToTwitter(formattedTweet, message.user) )
+      publish(OutboundMessage(message.channel, resultMessage))
+
+    case Command("twitter-post-with-image", imageUrl :: tweetText, message) =>
+      val formattedTweet = formatMessage(tweetText)
+      log.debug(s"Got x= twitter-post-with-image image is $imageUrl text $formattedTweet from Slack")
+
+      val imageTry = twitter.getImageStream(imageUrl)
+      val resultMessage: String = validateTweet(formattedTweet, Option(imageTry)).getOrElse( postToTwitter(formattedTweet, imageTry.get, message.user) )
       publish(OutboundMessage(message.channel, resultMessage))
   }
 
+  private def formatMessage(params: List[String]): String = {
+    params.mkString(" ").replaceAll("\\\\@", "@").replaceAll("\\\\#", "#")
+  }
+
   def postToTwitter(formattedTweet: String, byUser: String): String = {
-    log.debug(s"Got x= twitter-post $formattedTweet from Slack")
-    val status = twitter.post(formattedTweet)
+    val status = twitter.post(new StatusUpdate(formattedTweet))
     saveToDb(formattedTweet, byUser)
-    val resultMessage = buildMessage(formattedTweet, status)
-    resultMessage
+    buildTweetPostedMessage(formattedTweet, status)
+  }
+
+  def postToTwitter(formattedTweet: String, imageStream: InputStream, byUser: String): String = {
+    val update = new StatusUpdate(formattedTweet)
+    update.setMedia("Image", imageStream)
+    val status = twitter.post(update)
+    saveToDb(formattedTweet, byUser)
+    buildTweetPostedMessage(formattedTweet, status)
   }
 
   //None if correct, Some(readable error message) if invalid
-  def validateTweet(formattedTweet: String): Option[String] = {
+  private def validateTweet(formattedTweet: String, imageTry: Option[Try[InputStream]] = None): Option[String] = {
     val len = formattedTweet.length
     val topicNum = formattedTweet.count(_ == '#')
     val mentionNum = formattedTweet.count(_ == '@')
 
-    if(len >= 140 || topicNum == 0 || mentionNum == 0){
-      Some(s"Error During validation. The message is $len characters long (max 140). Contains $topicNum topics (#) and $mentionNum mentions (@)")
+    if(len >= 140 || topicNum == 0 || mentionNum == 0 || imageTry.map(_.isFailure).getOrElse(false)){
+      Some(s"Error During validation. " +
+        s"The message is $len characters long (max 140). " +
+        s"Contains $topicNum topics (#) and $mentionNum mentions (@). " +
+        s"Image Link is correct? ${imageTry.map(_.isSuccess).getOrElse(true)}")
     } else None
   }
 
-  protected def buildMessage(msg: String, status: Status): String = {
-    s"'$msg' has been posted to Twitter! This is our ${countAll()} published Tweet $peopleToInform. The link is ${buildLink(status)}"
+  protected def buildTweetPostedMessage(msg: String, status: Status): String = {
+    s"'$msg' has been posted to Twitter! This is our ${countAll()} published Tweet $peopleToInform. The link is ${buildTwitterLink(status)}"
   }
 
-  protected def buildLink(status: Status): String = {
+  protected def buildTwitterLink(status: Status): String = {
     s"https://twitter.com/${status.getUser.getId}/status/${status.getId}"
   }
 
@@ -77,8 +104,13 @@ class TwitterMessenger(
   private val tf = new TwitterFactory(cb.build())
   private val twitter = tf.getInstance()
 
-  def post(text: String): Status = {
-    twitter.updateStatus(text)
+  def post(update: StatusUpdate): Status = {
+    twitter.updateStatus(update)
+  }
+
+  def getImageStream(imageUrl: String) = Try {
+    val url = new URL(imageUrl)
+    url.openStream()
   }
 }
 
