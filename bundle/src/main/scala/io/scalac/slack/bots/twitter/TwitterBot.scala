@@ -39,7 +39,7 @@ class TwitterBot(
       val formattedTweet = formatMessage(tweetText)
       log.debug(s"Got x= twitter-post-with-image image is $imageUrl text $formattedTweet from Slack")
 
-      val imageTry = twitter.getImageStream(imageUrl)
+      val imageTry = twitter.getImageStream(imageUrl.replace("<", "").replace(">", ""))
       val resultMessage: String = validateTweet(formattedTweet, Option(imageTry)).getOrElse( postToTwitter(formattedTweet, imageTry.get, message.user) )
       publish(OutboundMessage(message.channel, resultMessage))
   }
@@ -68,7 +68,7 @@ class TwitterBot(
     val topicNum = formattedTweet.count(_ == '#')
     val mentionNum = formattedTweet.count(_ == '@')
 
-    if(len >= 140 || topicNum == 0 || mentionNum == 0 || imageTry.map(_.isFailure).getOrElse(false)){
+    if(len >= 140 || (topicNum == 0 && mentionNum == 0) || imageTry.map(_.isFailure).getOrElse(false)){
       Some(s"Error During validation. " +
         s"The message is $len characters long (max 140). " +
         s"Contains $topicNum topics (#) and $mentionNum mentions (@). " +
@@ -86,7 +86,8 @@ class TwitterBot(
 
   override def help(channel: String): OutboundMessage = OutboundMessage(channel,
     s"*${name}* brings company Twitter account to the masses. \\n " +
-      s"`twitter-post {message}` - posts the given message to Twitter from company account")
+      s"`twitter-post {message}` - posts the given message to Twitter from company account \\n" +
+      s"`twitter-post-with-image {image url, without spaces} {message}` - posts the given message to Twitter from company account attaching the given image from internet")
 }
 
 class TwitterMessenger(
