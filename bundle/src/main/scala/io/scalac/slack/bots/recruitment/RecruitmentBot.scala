@@ -5,6 +5,7 @@ import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common.{Command, OutboundMessage}
 
 import scala.util.Random
+import com.typesafe.config.{Config, ConfigObject, ConfigFactory}
 
 /**
  * Maintainer: Patryk
@@ -68,7 +69,6 @@ object Measurable {
 }
 
 case class TaskData(
-//  name: String,
   url: String,
   override val level: Double,
   override val focus: Double
@@ -80,18 +80,15 @@ case class Scalac(
   override val focus: Double) extends Measurable
 
 class EmployeeRepository() {
-  import Measurable._
-  
-  val people = List(
-    Scalac("Jan", Senior, Backend),
-    Scalac("Piotr", Senior, Mobile),
-    Scalac("Marek T", Senior, 1.5),
-    Scalac("Marek S", Senior, Frontend),
-    Scalac("Note", Medior, Backend),
-    Scalac("Adam N", Junior, 0.25)
-  )
 
-  val threshold = 0.5D
+  val conf = ConfigFactory.load()
+  val people = conf.getConfigList("recruitment.reviewers").toArray.map{
+    case c: Config =>
+      val person = c.root().toConfig
+      Scalac(person.getString("name"), person.getDouble("level"), person.getDouble("focus"))
+  }.toList
+
+  val threshold = 1.0D
 
   val rand = new Random()
 
