@@ -14,7 +14,7 @@ class RecruitmentBot(repo: EmployeeRepository, override val bus: MessageEventBus
   import Measurable._
 
   override def help(channel: String): OutboundMessage = OutboundMessage(channel,
-    s"*${name}* is a toll to help find reviewers for candidates \\n" +
+    s"*${name}* is a tool to help find reviewers for candidates \\n" +
       s"`match-candidate {link to candidate} {level, one of junior/medior/senior} {area of focus, one of backend/frontend/mobile }` - " +
         s"find a match for a given candidates among Scalac")
 
