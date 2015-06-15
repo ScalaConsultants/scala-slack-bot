@@ -10,6 +10,7 @@ import java.io.PrintWriter
 
 /**
  * Maintainer: Patryk
+ * Status: Experimental
  */
 class ReplBot(interpreter: Repl, override val bus: MessageEventBus) extends AbstractBot {
 
