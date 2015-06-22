@@ -26,10 +26,14 @@ class GifsBot(gifsRepo: GifsRepository) extends AbstractBot {
     case Command("gif", "store" :: params, message) =>
       val gifUrl = params.head
       params.tail.distinct.foreach { tag =>
-        println(s"GIF TAG ADDED: url[$gifUrl], tag:[$tag]")
+        log.debug(s"GIF TAG ADDED: url[$gifUrl], tag:[$tag]")
         gifsRepo.insert(tag, gifUrl)
         publish(OutboundMessage(message.channel, s"Image stored under tag: [$tag]"))
       }
+    case Command("gif", "delete" :: tag :: rest, message) =>
+      log.debug(s"remove images for tag: $tag")
+      gifsRepo.delete(tag)
+
     case Command("gif", "help" :: params, message) =>
       publish(help(message.channel))
 
@@ -77,5 +81,8 @@ class GifsRepository() extends AbstractRepository {
 
   def tagList: List[String] = db.withDynSession(gifTags.map(_.name).list.distinct)
 
-  def strip(url: String): String = url.trim.replaceAll("[<>]", "")
+  def delete(tagName: String) = db.withDynSession(gifTags.filter(_.name === tagName).delete)
+
+  private def strip(url: String): String = url.trim.replaceAll("[<>]", "")
+
 }
