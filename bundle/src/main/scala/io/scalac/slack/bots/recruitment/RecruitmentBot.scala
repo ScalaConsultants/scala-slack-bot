@@ -63,7 +63,7 @@ object Measurable {
   def focusToDouble(focus: String) = focus.toLowerCase match {
     case "mobile" => Some(Mobile)
     case "backend" => Some(Backend)
-    case "Frontend" => Some(Frontend)
+    case "frontend" => Some(Frontend)
     case _ => None
   }
 }
