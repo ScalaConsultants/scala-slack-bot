@@ -3,7 +3,7 @@ package io.scalac.slack.common
 import akka.actor.{ActorContext, ActorRef, Props}
 import io.scalac.slack.bots.gifs.{GifsBot, GifsRepository}
 import io.scalac.slack.bots.recruitment.{EmployeeRepository, RecruitmentBot}
-import io.scalac.slack.bots.{ImportantMessageBot, LoggingBot}
+import io.scalac.slack.bots.{RichMessageTestBot, ImportantMessageBot, LoggingBot}
 import io.scalac.slack.bots.digest.{DigestRepository, DigestBot}
 import io.scalac.slack.bots.feedback.{FeedbackRepository, FeedbackBot}
 import io.scalac.slack.bots.hello.HelloBot
@@ -40,7 +40,8 @@ class DefaultBotBundle extends BotModules {
     val tagBot = context.actorOf(Props(classOf[TagsBot], new TagsRepository(), bus), "tagBot")
     val feedbackBot = context.actorOf(Props(classOf[FeedbackBot], new FeedbackRepository(), bus), "feedbackBot")
     val helpBot = context.actorOf(Props(classOf[HelpBot], bus), "helpBot")
-    val importantMessageBot = context.actorOf(Props[ImportantMessageBot], "importantMessageBot")
+    val importantMessageBot = context.actorOf(Props(classOf[ImportantMessageBot], bus), "importantMessageBot")
+    val richMessageBot = context.actorOf(Props[RichMessageTestBot], "richMessageBot")
     val gifBot = context.actorOf(Props(classOf[GifsBot], new GifsRepository()), "gifBot") //TODO: use external bus
     val recruitmentBot = context.actorOf(Props(classOf[RecruitmentBot], new EmployeeRepository(), bus), "recruitmentBot")
   }

@@ -66,6 +66,9 @@ class SlackBotActor(modules: BotModules, eventBus: MessageEventBus) extends Acto
     case se: SlackError =>
       log.error(s"SlackError occured [${se.toString}]")
       SlackBot.shutdown()
+    case res: RtmStartResponse =>
+      SlackBot.userStorage ! RegisterUsers(res.users:_*)
+      SlackBot.userStorage ! RegisterDirectChannels(res.ims:_*)
   }
 
 }
