@@ -14,6 +14,7 @@ object SlackBot {
 
   val websocketClient = system.actorOf(Props(classOf[WSActor], eventBus), "ws-actor")
   val slackBot = system.actorOf(Props(classOf[SlackBotActor], new DefaultBotBundle, eventBus), "slack-bot")
+  val userStorage = system.actorOf(Props[UsersStorage], "users-storage")
 
   var botInfo: Option[BotInfo] = None
 
