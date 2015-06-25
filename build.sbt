@@ -33,4 +33,4 @@ libraryDependencies ++= {
   )
 }
 
-resolvers += "spray repo" at "http://repo.spray.io"
+resolvers ++= Seq("spray repo" at "http://repo.spray.io", "scalac repo" at "https://raw.githubusercontent.com/ScalaConsultants/mvn-repo/master/")
