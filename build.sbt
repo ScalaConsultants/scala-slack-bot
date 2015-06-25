@@ -29,7 +29,7 @@ libraryDependencies ++= {
     "org.twitter4j" % "twitter4j-core" % "4.0.0",
     "com.typesafe.slick" %% "slick" % "2.1.0",
     "com.h2database" % "h2" % "1.4.186",
-    "io.scalac" %% "slack-scala-bot-core" % "0.1"
+    "io.scalac" %% "slack-scala-bot-core" % "0.2.1"
   )
 }
 

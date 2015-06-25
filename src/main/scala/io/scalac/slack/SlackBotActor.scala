@@ -27,7 +27,7 @@ class SlackBotActor(modules: BotModules, eventBus: MessageEventBus) extends Acto
       api ! ApiTest()
     case Stop =>
       SlackBot.shutdown()
-    case Ok(_) =>
+    case Connected =>
       log.info("connected successfully...")
       log.info("trying to auth")
       api ! AuthTest(Config.apiKey)
