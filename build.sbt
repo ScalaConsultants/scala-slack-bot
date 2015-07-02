@@ -1,8 +1,8 @@
 name := "slack-scala-bot-bundle"
 
-version := "0.1"
+version := "0.1.1"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
 organization := "io.scalac"
 
