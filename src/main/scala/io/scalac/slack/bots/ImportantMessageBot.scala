@@ -6,7 +6,7 @@ import io.scalac.slack.common._
 /**
  * Created on 16.02.15 23:11
  */
-class ImportantMessageBot extends AbstractBot {
+class ImportantMessageBot(override val bus: MessageEventBus) extends AbstractBot {
 
   log.debug(s"Starting $this")
 
@@ -24,9 +24,7 @@ class ImportantMessageBot extends AbstractBot {
 
   }
 
-  //TODO
-  override val bus: MessageEventBus = SlackBot.eventBus
 
-  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"*${name}* is used for sending important messages \\n " +
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"*$name* is used for sending important messages \\n " +
     s"`important {message}` or starting with exclamation mark will make the message to become highlighted")
 }
