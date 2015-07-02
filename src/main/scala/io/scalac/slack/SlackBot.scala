@@ -2,25 +2,24 @@ package io.scalac.slack
 
 import akka.actor.{ActorSystem, Props}
 import akka.event.Logging
-import io.scalac.slack.api.{BotInfo, Start}
-import io.scalac.slack.common.DefaultBotBundle
-import io.scalac.slack.websockets.{WSActor, WebSocket}
+import io.scalac.slack.api.Start
+import io.scalac.slack.common.actors.SlackBotActor
+import io.scalac.slack.common.{DefaultBotBundle, Shutdownable, UsersStorage}
+import io.scalac.slack.websockets.WebSocket
 
-object SlackBot {
+object SlackBot extends Shutdownable {
 
   val system = ActorSystem("SlackBotSystem")
 
   val eventBus = new MessageEventBus
 
-  val websocketClient = system.actorOf(Props(classOf[WSActor], eventBus), "ws-actor")
-  val slackBot = system.actorOf(Props(classOf[SlackBotActor], new DefaultBotBundle, eventBus), "slack-bot")
-
-  var botInfo: Option[BotInfo] = None
+  val userStorage = system.actorOf(Props[UsersStorage], "users-storage")
+  val slackBot = system.actorOf(Props(classOf[SlackBotActor], new DefaultBotBundle, eventBus, this, Some(userStorage)), "slack-bot")
 
   def main(args: Array[String]) {
     val logger = Logging(system, getClass)
 
-    logger.info("SlackBot started")
+    logger.info("SlackBot has been started")
     logger.debug("With api key: " + Config.apiKey)
 
     try {
@@ -33,8 +32,7 @@ object SlackBot {
     } catch {
       case e: Exception =>
         logger.error("An unhandled exception occured...", e)
-        system.shutdown()
-        system.awaitTermination()
+        shutdown()
     }
 
   }
@@ -42,7 +40,7 @@ object SlackBot {
   sys.addShutdownHook(shutdown())
 
   def shutdown(): Unit = {
-    websocketClient ! WebSocket.Release
+    slackBot ! WebSocket.Release
     system.shutdown()
     system.awaitTermination()
   }

@@ -1,9 +1,8 @@
 package io.scalac.slack.bots.hello
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
-import io.scalac.slack.common.{Command, OutboundMessage}
-import io.scalac.slack.{MessageEventBus, SlackBot}
-import io.scalac.slack.common.{BaseMessage, Command, OutboundMessage}
+import io.scalac.slack.common._
 
 import scala.util.Random
 
@@ -20,7 +19,7 @@ class HelloBot(override val bus: MessageEventBus) extends AbstractBot {
       publish(OutboundMessage(message.channel, s"hello <@${message.user}>,\\n $welcome"))
 
     case BaseMessage(text, channel, user, _, _) =>
-      SlackBot.botInfo match {
+      BotInfoKeeper.current match {
         case Some(bi) if text.matches("(?i)(^|\\s*)(hi|hello)($|(\\s+.*))") && (text.contains(bi.id) || text.contains(bi.name)) && user != bi.id =>
 
           //multiline message example
@@ -33,6 +32,6 @@ class HelloBot(override val bus: MessageEventBus) extends AbstractBot {
 
   }
 
-  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"When you feel lonely and unwanted *${name}* is something for you. \\n " +
-      s"`hello` - to talk with the bot")
+  override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"When you feel lonely and unwanted *$name* is something for you. \\n " +
+    s"`hello` - to talk with the bot")
 }
