@@ -23,7 +23,7 @@ class DefaultBotBundle extends BotModules {
     val loggingBot = context.actorOf(Props[LoggingBot], "loggingBot")
     val pingpongBot = context.actorOf(Props[PingPongBot], "pingpongBot")
     val digestBot = context.actorOf(Props(classOf[DigestBot], new DigestRepository(), bus), "digestBot")
-    val commandProcessor = context.actorOf(Props[CommandsRecognizerBot], "commandProcessor")
+    val commandProcessor = context.actorOf(Props(classOf[CommandsRecognizerBot], bus), "commandProcessor")
     val helloBot = context.actorOf(Props(classOf[HelloBot], bus),  "helloBot")
     val replBot =  context.actorOf(Props(classOf[ReplBot], new Repl(Config.scalaLibraryPath), bus), "replBot")
     val twitterBot =  context.actorOf(
