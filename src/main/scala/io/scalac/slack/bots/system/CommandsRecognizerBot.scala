@@ -1,8 +1,8 @@
 package io.scalac.slack.bots.system
 
 import io.scalac.slack.bots.IncomingMessageListener
+import io.scalac.slack.common.{BaseMessage, BotInfoKeeper, Command}
 import io.scalac.slack.{MessageEventBus, SlackBot}
-import io.scalac.slack.common.{BaseMessage, Command}
 
 class CommandsRecognizerBot extends IncomingMessageListener {
 
@@ -10,7 +10,7 @@ class CommandsRecognizerBot extends IncomingMessageListener {
 
   override def receive: Receive = {
 
-    case bm @ BaseMessage(text, channel, user, dateTime, edited) =>
+    case bm@BaseMessage(text, channel, user, dateTime, edited) =>
       //COMMAND links list with bot's nam jack can be called:
       // jack link list
       // jack: link list
@@ -28,7 +28,7 @@ class CommandsRecognizerBot extends IncomingMessageListener {
 
       //call by commad character
       if (!changeIntoCommand(commandChar.toString))
-        SlackBot.botInfo match {
+        BotInfoKeeper.current match {
           case Some(bi) =>
             //call by name
             changeIntoCommand(bi.name + ":") ||
@@ -38,9 +38,7 @@ class CommandsRecognizerBot extends IncomingMessageListener {
               changeIntoCommand(s"<@${bi.id}>")
 
           case None => //nothing to do!
-
         }
-
   }
 
   override def bus: MessageEventBus = SlackBot.eventBus
