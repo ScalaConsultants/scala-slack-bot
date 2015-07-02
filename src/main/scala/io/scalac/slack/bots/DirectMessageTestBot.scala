@@ -8,13 +8,13 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 
 
-class DirectMessageTestBot extends IncomingMessageListener {
+class DirectMessageTestBot(override val bus: MessageEventBus) extends IncomingMessageListener {
   log.debug(s"Starting $this")
 
-  override val bus: MessageEventBus = SlackBot.eventBus
   implicit val usersStorage = SlackBot.userStorage
 
   import context._
+
   implicit val timeOut: Timeout = 1 second
 
   override def receive: Receive = {

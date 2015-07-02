@@ -1,14 +1,14 @@
 package io.scalac.slack.bots.gifs
 
+import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
 import io.scalac.slack.common._
-import io.scalac.slack.{MessageEventBus, SlackBot}
 
 import scala.slick.driver.H2Driver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 import scala.util.Random
 
-class GifsBot(gifsRepo: GifsRepository) extends AbstractBot {
+class GifsBot(gifsRepo: GifsRepository, override val bus: MessageEventBus) extends AbstractBot {
 
   override def help(channel: String): OutboundMessage = OutboundMessage(channel, s"*$name* is used for storing useful gifs \\n " +
     s"Add image to repository for your future uses \\n" +
@@ -46,8 +46,6 @@ class GifsBot(gifsRepo: GifsRepository) extends AbstractBot {
         )
       }
   }
-
-  override val bus: MessageEventBus = SlackBot.eventBus
 }
 
 class GifsRepository() extends AbstractRepository {
