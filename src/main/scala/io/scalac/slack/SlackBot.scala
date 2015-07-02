@@ -3,7 +3,7 @@ package io.scalac.slack
 import akka.actor.{ActorSystem, Props}
 import akka.event.Logging
 import io.scalac.slack.api.{BotInfo, Start}
-import io.scalac.slack.common.DefaultBotBundle
+import io.scalac.slack.common.{DefaultBotBundle, UsersStorage}
 import io.scalac.slack.websockets.{WSActor, WebSocket}
 
 object SlackBot {

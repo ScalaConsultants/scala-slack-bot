@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.util.Timeout
 import io.scalac.slack.api._
+import io.scalac.slack.common.{RegisterDirectChannels, RegisterUsers}
 import io.scalac.slack.websockets.WebSocket
 
 import scala.concurrent.duration._
@@ -15,10 +16,8 @@ class SlackBotActor(modules: BotModules, eventBus: MessageEventBus) extends Acto
 
   val api = context.actorOf(Props[ApiActor])
   val richProcessor = context.actorOf(Props(classOf[OutgoingRichMessageProcessor], api, eventBus))
-
-  var errors = 0
-
   val websocketClient = SlackBot.websocketClient
+  var errors = 0
 
   override def receive: Receive = {
     case Start =>
@@ -51,7 +50,7 @@ class SlackBotActor(modules: BotModules, eventBus: MessageEventBus) extends Acto
 
       context.system.scheduler.scheduleOnce(Duration.create(5, TimeUnit.SECONDS), self, RegisterModules)
 
-    case bi @ BotInfo(_, _) =>
+    case bi@BotInfo(_, _) =>
       SlackBot.botInfo = Some(bi)
     case RegisterModules =>
       modules.registerModules(context, websocketClient)
@@ -67,8 +66,8 @@ class SlackBotActor(modules: BotModules, eventBus: MessageEventBus) extends Acto
       log.error(s"SlackError occured [${se.toString}]")
       SlackBot.shutdown()
     case res: RtmStartResponse =>
-      SlackBot.userStorage ! RegisterUsers(res.users:_*)
-      SlackBot.userStorage ! RegisterDirectChannels(res.ims:_*)
+      SlackBot.userStorage ! RegisterUsers(res.users: _*)
+      SlackBot.userStorage ! RegisterDirectChannels(res.ims: _*)
   }
 
 }
