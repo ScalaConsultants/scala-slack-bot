@@ -19,7 +19,7 @@ class DirectMessageTestBot extends IncomingMessageListener {
 
   override def receive: Receive = {
     case Command("direct", params, m) =>
-      DirectMessage(m.user, "You said: " + params.mkString(" "))
+      publish(DirectMessage(m.user, "You said: "+params.mkString(" ")))
   }
 }
 
