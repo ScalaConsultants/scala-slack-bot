@@ -23,7 +23,7 @@ class DefaultBotBundle extends BotModules {
     val loggingBot = context.actorOf(Props[LoggingBot], "loggingBot")
     val pingpongBot = context.actorOf(Props[PingPongBot], "pingpongBot")
     val digestBot = context.actorOf(Props(classOf[DigestBot], new DigestRepository(), bus), "digestBot")
-    val commandProcessor = context.actorOf(Props[CommandsRecognizerBot], "commandProcessor")
+    val commandProcessor = context.actorOf(Props(classOf[CommandsRecognizerBot], bus), "commandProcessor")
     val helloBot = context.actorOf(Props(classOf[HelloBot], bus),  "helloBot")
     val replBot =  context.actorOf(Props(classOf[ReplBot], new Repl(Config.scalaLibraryPath), bus), "replBot")
     val twitterBot =  context.actorOf(
@@ -42,9 +42,9 @@ class DefaultBotBundle extends BotModules {
     val helpBot = context.actorOf(Props(classOf[HelpBot], bus), "helpBot")
     val importantMessageBot = context.actorOf(Props(classOf[ImportantMessageBot], bus), "importantMessageBot")
     val richMessageBot = context.actorOf(Props[RichMessageTestBot], "richMessageBot")
-    val gifBot = context.actorOf(Props(classOf[GifsBot], new GifsRepository()), "gifBot") //TODO: use external bus
+    val gifBot = context.actorOf(Props(classOf[GifsBot], new GifsRepository(), bus), "gifBot")
     val recruitmentBot = context.actorOf(Props(classOf[RecruitmentBot], new EmployeeRepository(), bus), "recruitmentBot")
-    val directBot = context.actorOf(Props[DirectMessageTestBot], "direct-message-bot")
+    val directBot = context.actorOf(Props(classOf[DirectMessageTestBot], bus), "direct-message-bot")
 
   }
 }
