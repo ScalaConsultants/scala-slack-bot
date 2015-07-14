@@ -10,7 +10,7 @@ import com.typesafe.config.{Config, ConfigObject, ConfigFactory}
 /**
  * Maintainer: Patryk
  */
-class RecruitmentBot(repo: EmployeeRepository, override val bus: MessageEventBus) extends AbstractBot {
+class RecruitmentBot(repo: MatcherEngine, override val bus: MessageEventBus) extends AbstractBot {
   import Measurable._
 
   override def help(channel: String): OutboundMessage = OutboundMessage(channel,
@@ -37,67 +37,5 @@ class RecruitmentBot(repo: EmployeeRepository, override val bus: MessageEventBus
       }
 
       publish(result)
-  }
-}
-
-trait Measurable {
-  val level: Double
-  val focus: Double
-}
-object Measurable {
-  val Junior = 0.0D
-  val Medior = 1.0D
-  val Senior = 2.0D
-
-  val Mobile = 0.0D
-  val Backend = 1.0D
-  val Frontend = 2.0D
-  
-  def levelToDouble(level: String) = level.toLowerCase match {
-    case "junior" => Some(Junior)
-    case "medior" => Some(Medior)
-    case "senior" => Some(Senior)
-    case _ => None 
-  }
-
-  def focusToDouble(focus: String) = focus.toLowerCase match {
-    case "mobile" => Some(Mobile)
-    case "backend" => Some(Backend)
-    case "frontend" => Some(Frontend)
-    case _ => None
-  }
-}
-
-case class TaskData(
-  url: String,
-  override val level: Double,
-  override val focus: Double
-) extends Measurable
-
-case class Scalac(
-  name: String,
-  override val level: Double,
-  override val focus: Double) extends Measurable
-
-class EmployeeRepository() {
-
-  val conf = ConfigFactory.load()
-  val people = conf.getConfigList("recruitment.reviewers").toArray.map{
-    case c: Config =>
-      val person = c.root().toConfig
-      Scalac(person.getString("name"), person.getDouble("level"), person.getDouble("focus"))
-  }.toList
-
-  val threshold = 1.0D
-
-  val rand = new Random()
-
-  def findClosest(task: TaskData): Option[Scalac] = {
-    val withDistnace = people.map(sc => {
-      val distance = Math.abs(sc.focus - task.focus) + Math.abs(sc.level - task.level)
-      (sc, distance)
-    })
-    val filtered = withDistnace.filter(_._2 <= threshold).map(_._1)
-    rand.shuffle(filtered).headOption
   }
 }
