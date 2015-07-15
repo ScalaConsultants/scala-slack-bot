@@ -8,7 +8,7 @@ class KMeansMatcherEngine(people: List[Scalac]) extends MatcherEngine {
 
   val rand = new Random()
 
-  override def findClosest(task: TaskData): Option[Scalac] = {
+  override def matchCandidate(task: TaskData): Option[Scalac] = {
     val withDistnace = people.map(sc => {
       val distance = Math.abs(sc.focus - task.focus) + Math.abs(sc.level - task.level)
       (sc, distance)

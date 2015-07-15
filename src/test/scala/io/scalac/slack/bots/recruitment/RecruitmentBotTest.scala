@@ -26,6 +26,8 @@ class RecruitmentBotTest (_system: ActorSystem) extends TestKit(_system) with Bo
         level = Measurable.Junior,
         focus = Measurable.Backend)
 
+      when(mocked.matchCandidate(task)).thenReturn(None)
+
       matrix(bot) { entry =>
         val base = BaseMessage(
           text = s"${task.url} Junior Backend",
@@ -33,7 +35,8 @@ class RecruitmentBotTest (_system: ActorSystem) extends TestKit(_system) with Bo
 
         entry ! Command("match-candidate", base.text.split(" ").toList, base)
 
-        verify(mocked).findClosest(task)
+        theProbe.expectMsg(10 second, OutboundMessage(base.channel, s"Bot matched NO MATCH for task ${task.url}"))
+        verify(mocked).matchCandidate(task)
       }
     }
 
@@ -48,7 +51,7 @@ class RecruitmentBotTest (_system: ActorSystem) extends TestKit(_system) with Bo
 
         entry ! Command("match-candidate", base.text.split(" ").toList, base)
 
-        theProbe.expectMsg(1 second, OutboundMessage(base.channel, s"No Level for !!Junior!!. Use one of junior/medior/senior"))
+        theProbe.expectMsg(10 second, OutboundMessage(base.channel, s"No level for !!Junior!!. Use one of junior/medior/senior"))
         verifyZeroInteractions(mocked)
       }
     }
@@ -64,7 +67,7 @@ class RecruitmentBotTest (_system: ActorSystem) extends TestKit(_system) with Bo
 
         entry ! Command("match-candidate", base.text.split(" ").toList, base)
 
-        theProbe.expectMsg(1 second, OutboundMessage(base.channel, s"No focus for !!Backend!!. Use one of backend/frontend/mobile"))
+        theProbe.expectMsg(10 second, OutboundMessage(base.channel, s"No focus for !!Backend!!. Use one of backend/frontend/mobile"))
         verifyZeroInteractions(mocked)
       }
     }

@@ -68,9 +68,9 @@ class TwitterBotTest (_system: ActorSystem) extends TestKit(_system) with BotTes
 
         val status = mock[Status]
         val user = mock[User]
-        when(status.getId).thenReturn(600394753251868673L)
+        when(status.getId).thenReturn(600394753251868674L)
         when(status.getUser).thenReturn(user)
-        when(user.getId).thenReturn(3073307699L)
+        when(user.getId).thenReturn(3073307600L)
 
         val update = new StatusUpdate(msgText)
         val imageTry = Try { new URL(imageFile).openStream()}
@@ -79,7 +79,7 @@ class TwitterBotTest (_system: ActorSystem) extends TestKit(_system) with BotTes
         when(messenger.getImageStream(imageFile)).thenReturn(imageTry)
         when(messenger.post(update)).thenReturn(status)
 
-        val expectedLink = "https://twitter.com/3073307699/status/600394753251868673"
+        val expectedLink = "https://twitter.com/3073307600/status/600394753251868674"
 
         entry ! Command("twitter-post-with-image", List(imageFile, msgText), base)
 
@@ -112,7 +112,7 @@ class TwitterBotTest (_system: ActorSystem) extends TestKit(_system) with BotTes
 
       val bot = botUnderTest(messenger, repo)
       val noText = ""
-      
+
       matrix(bot) { entry =>
         val base = BaseMessage(text = noText, channel = "channel", user = "", ts = "", edited = false)
 

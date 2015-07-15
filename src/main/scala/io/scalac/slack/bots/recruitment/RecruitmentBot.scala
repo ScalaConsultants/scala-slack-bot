@@ -24,14 +24,16 @@ class RecruitmentBot(repo: MatcherEngine, override val bus: MessageEventBus) ext
 
       val result = (levelToDouble(level), focusToDouble(focus)) match {
         case (None, _) =>
-          OutboundMessage(message.channel, s"No Level for $level. Use one of junior/medior/senior")
+          log.debug(s"Aborting due to incorrect level: $level")
+          OutboundMessage(message.channel, s"No level for $level. Use one of junior/medior/senior")
         case (_, None) =>
+          log.debug(s"Aborting due to incorrect focus: $focus")
           OutboundMessage(message.channel, s"No focus for $focus. Use one of backend/frontend/mobile")
         case (Some(levelD), Some(focusD)) =>
           val url = link.replace("<", "").replace(">", "")
 
           val task = TaskData(url, levelD, focusD)
-          val matching = repo.findClosest(task)
+          val matching = repo.matchCandidate(task)
 
           OutboundMessage(message.channel, s"Bot matched ${matching.map(_.name).getOrElse("NO MATCH")} for task $url")
       }
