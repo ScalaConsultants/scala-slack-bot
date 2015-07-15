@@ -1,6 +1,7 @@
 package io.scalac.slack.bots.recruitment
 
 import scala.util.Random
+import scala.math._
 
 class KMeansMatcherEngine(people: List[Scalac]) extends MatcherEngine {
 
@@ -10,7 +11,7 @@ class KMeansMatcherEngine(people: List[Scalac]) extends MatcherEngine {
 
   override def matchCandidate(task: TaskData): Option[Scalac] = {
     val withDistnace = people.map(sc => {
-      val distance = Math.abs(sc.focus - task.focus) + Math.abs(sc.level - task.level)
+      val distance = sqrt(pow(abs(sc.focus - task.focus), 2) + pow(abs(sc.level - task.level), 2))
       (sc, distance)
     })
     val filtered = withDistnace.filter(_._2 <= threshold).map(_._1)
