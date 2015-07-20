@@ -46,6 +46,6 @@ class DefaultBotBundle extends BotModules {
     val gifBot = context.actorOf(Props(classOf[GifsBot], new GifsRepository(), bus), "gifBot")
     val recruitmentBot = context.actorOf(Props(classOf[RecruitmentBot], new EmployeeRepository(), bus), "recruitmentBot")
     val directBot = context.actorOf(Props(classOf[DirectMessageTestBot], bus), "direct-message-bot")
-    val votingtBot = context.actorOf(Props(classOf[VotingBot], bus), "voting-bot")
+    val votingtBot = context.actorOf(Props(classOf[VotingBot], bus), "votingBot")
   }
 }
