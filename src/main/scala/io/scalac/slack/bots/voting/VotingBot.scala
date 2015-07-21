@@ -2,7 +2,7 @@ package io.scalac.slack.bots.voting
 
 import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.AbstractBot
-import io.scalac.slack.common.{MessageFormatter, Command, OutboundMessage}
+import io.scalac.slack.common.{BaseMessage, MessageFormatter, Command, OutboundMessage}
 import org.joda.time.DateTime
 
 /**
@@ -10,6 +10,7 @@ import org.joda.time.DateTime
  */
 class VotingBot(repo: VotingRepo, override val bus: MessageEventBus) extends AbstractBot with MessageFormatter {
   import io.scalac.slack.bots.voting.VotingBot._
+  import repo.VoteResult._
 
   override def help(channel: String): OutboundMessage = OutboundMessage(channel, 
     s"*$name* provides a voting mechanism, so everyone case express their opinion. $EOL" +
@@ -22,30 +23,37 @@ class VotingBot(repo: VotingRepo, override val bus: MessageEventBus) extends Abs
   override def act: Receive = {
     case Command("vote-open", words, message) if words.length > 1 =>
       val parts =  words.mkString(" ").split(";")
-      val voting = VotingTopic(parts.head, parts.tail, DateTime.now())
-      val sessionId = repo.createSession(voting)
+      val sessionId = repo.createSession(parts.head, parts.tail)
 
       log.info(s"New session $sessionId started with ${parts.mkString(" ")}")
       publish( OutboundMessage(message.channel,
-        s"${mention(message.user)}: Voting session $sessionId started. Q: ${parts.head} $EOL" +
-        s"A: ${parts.tail.mkString(EOL)}") )
+        formatOpenMessage(sessionId, message.user, parts)) )
 
-    case Command("vote", sessionId :: answerIdStr :: _, message) =>
-      log.info(s"${message.user} is voting on $answerIdStr in session $sessionId")
+    case Command("vote", sessionIdStr :: answerIdStr :: _, message) =>
+      log.info(s"${message.user} is voting on $answerIdStr in session $sessionIdStr")
       val answerId = answerIdStr.toInt
+      val sessionId = sessionIdStr.toLong
 
-      val response = repo.findSession(sessionId.toLong) match {
-        case Some(session) if answerId < session.topic.answers.length =>
-          val vote = Vote(message.user, answerId, DateTime.now())
-          repo.addVote(sessionId, vote, session)
-          OutboundMessage(message.channel, s"${message.user}: Vote in $sessionId for '${session.topic.answers(answerId)}' has been taken")
-
-        case Some(session) if answerIdStr.toLong > session.topic.answers.length =>
-          OutboundMessage(message.channel, s"${message.user}: Possible answers are ${session.topic.answers.zipWithIndex}")
-
-        case None =>
-          OutboundMessage(message.channel, s"No session with this Id: $sessionId")
+      val vote = Vote(message.user, answerId, DateTime.now())
+      val response = repo.addVote(sessionId, vote) match {
+        case Voted =>
+          OutboundMessage(message.channel, formatVoteMessage(sessionId, message.user, answerId))
+        case _ =>
+          OutboundMessage(message.channel, s"No session with this Id: $sessionIdStr")
       }
+
+//      val response = repo.findSession(sessionId.toLong) match {
+//        case Some(session) if answerId < session.topic.answers.length =>
+//          val vote = Vote(message.user, answerId, DateTime.now())
+//          repo.addVote(sessionId, vote)
+//          OutboundMessage(message.channel, formatVoteMessage(sessionId.toLong, message.user, session, answerId))
+//
+//        case Some(session) if answerIdStr.toLong > session.topic.answers.length =>
+//          OutboundMessage(message.channel, s"${message.user}: Possible answers are ${session.topic.answers.zipWithIndex}")
+//
+//        case None =>
+//          OutboundMessage(message.channel, s"No session with this Id: $sessionId")
+//      }
       publish(response)
 
     case Command("vote-close", sessionIdStr :: _, message) =>
@@ -72,8 +80,17 @@ class VotingBot(repo: VotingRepo, override val bus: MessageEventBus) extends Abs
   }
 }
 
-object VotingBot {
+object VotingBot extends MessageFormatter {
   case class VotingTopic(question: String, answers: Array[String], asked: DateTime, isOpened: Boolean = true)
   case class Vote(voter: String, answer: Int, voted: DateTime)
   case class Session(topic: VotingTopic, votes: List[Vote])
+
+  def formatOpenMessage(sessionId: Long, user: String, parts: Array[String]): String = {
+    s"${mention(user)}: Voting session $sessionId started. Q: ${parts.head} $EOL" +
+      s"A: ${parts.tail.mkString(EOL)}"
+  }
+
+  def formatVoteMessage(sessionId: Long, user: String, answerId: Int): String = {
+    s"${user}: Vote in $sessionId for $answerId has been taken"
+  }
 }
