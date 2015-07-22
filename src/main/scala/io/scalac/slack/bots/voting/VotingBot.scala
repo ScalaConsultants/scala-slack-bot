@@ -10,7 +10,6 @@ import org.joda.time.DateTime
  */
 class VotingBot(repo: VotingRepo, override val bus: MessageEventBus) extends AbstractBot with MessageFormatter {
   import io.scalac.slack.bots.voting.VotingBot._
-  import repo.VoteResult._
 
   override def help(channel: String): OutboundMessage = OutboundMessage(channel, 
     s"*$name* provides a voting mechanism, so everyone case express their opinion. $EOL" +
@@ -34,26 +33,17 @@ class VotingBot(repo: VotingRepo, override val bus: MessageEventBus) extends Abs
       val answerId = answerIdStr.toInt
       val sessionId = sessionIdStr.toLong
 
-      val vote = Vote(message.user, answerId, DateTime.now())
+      val vote = Vote(message.user, answerId)
       val response = repo.addVote(sessionId, vote) match {
-        case Voted =>
+        case VoteResult.Voted =>
           OutboundMessage(message.channel, formatVoteMessage(sessionId, message.user, answerId))
-        case _ =>
-          OutboundMessage(message.channel, s"No session with this Id: $sessionIdStr")
+        case VoteResult.NoAnswer =>
+          OutboundMessage(message.channel, formatNoAnswerMessage(sessionId, message.user, answerId))
+        case VoteResult.SessionClosed =>
+          OutboundMessage(message.channel, formatSessionClosedMessage(sessionId, message.user))
+        case VoteResult.NoSession =>
+          OutboundMessage(message.channel, formatNoSessionMessage(sessionId, message.user))
       }
-
-//      val response = repo.findSession(sessionId.toLong) match {
-//        case Some(session) if answerId < session.topic.answers.length =>
-//          val vote = Vote(message.user, answerId, DateTime.now())
-//          repo.addVote(sessionId, vote)
-//          OutboundMessage(message.channel, formatVoteMessage(sessionId.toLong, message.user, session, answerId))
-//
-//        case Some(session) if answerIdStr.toLong > session.topic.answers.length =>
-//          OutboundMessage(message.channel, s"${message.user}: Possible answers are ${session.topic.answers.zipWithIndex}")
-//
-//        case None =>
-//          OutboundMessage(message.channel, s"No session with this Id: $sessionId")
-//      }
       publish(response)
 
     case Command("vote-close", sessionIdStr :: _, message) =>
@@ -82,7 +72,7 @@ class VotingBot(repo: VotingRepo, override val bus: MessageEventBus) extends Abs
 
 object VotingBot extends MessageFormatter {
   case class VotingTopic(question: String, answers: Array[String], asked: DateTime, isOpened: Boolean = true)
-  case class Vote(voter: String, answer: Int, voted: DateTime)
+  case class Vote(voter: String, answer: Int)
   case class Session(topic: VotingTopic, votes: List[Vote])
 
   def formatOpenMessage(sessionId: Long, user: String, parts: Array[String]): String = {
@@ -92,5 +82,17 @@ object VotingBot extends MessageFormatter {
 
   def formatVoteMessage(sessionId: Long, user: String, answerId: Int): String = {
     s"${user}: Vote in $sessionId for $answerId has been taken"
+  }
+
+  def formatSessionClosedMessage(sessionId: Long, user: String): String = {
+    s"${user}: Session $sessionId has been closed"
+  }
+
+  def formatNoAnswerMessage(sessionId: Long, user: String, answerId: Int): String = {
+    s"${user}: Session $sessionId has no answer $answerId"
+  }
+
+  def formatNoSessionMessage(sessionId: Long, user: String): String = {
+    s"${user}: No session with this Id: $sessionId"
   }
 }

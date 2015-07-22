@@ -5,13 +5,12 @@ import org.joda.time.DateTime
 
 import scala.collection.mutable
 
+object VoteResult extends Enumeration {
+  type VoteResult = Value
+  val Voted, NoSession, SessionClosed, NoAnswer = Value
+}
 
 trait VotingRepo {
-  object VoteResult extends Enumeration {
-    type VoteResult = Value
-    val Voted, NoSession, SessionClosed, NoAnswer = Value
-  }
-
   def findSession(sessionId: Long): Option[Session]
   def addVote(sessionId: Long, vote: Vote): VoteResult.Value
   def closeSession(sessionId: Long, session: Session): Long

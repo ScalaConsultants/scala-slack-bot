@@ -4,9 +4,8 @@ import akka.actor.{Props, ActorSystem}
 import akka.testkit.TestKit
 import io.scalac.slack.MessageEventBus
 import io.scalac.slack.bots.BotTest
-import io.scalac.slack.bots.voting.VotingBot.{Vote, VotingTopic, Session}
+import io.scalac.slack.bots.voting.VotingBot.Vote
 import io.scalac.slack.common.{OutboundMessage, Command, BaseMessage}
-import org.joda.time.DateTime
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 
@@ -41,20 +40,67 @@ class VotingBotTest(_system: ActorSystem) extends TestKit(_system) with BotTest 
 
     "allow to vote" in {
       val repo = mock[VotingRepo]
-      import repo.VoteResult._
 
       val sessionId = 403
       val answerId = 0
-      val vote = Vote(base.user, answerId, DateTime.now)
-//      val session = Session(VotingTopic("Question", Array("Answer0"), DateTime.now), List.empty[Vote])
-//      when(repo.findSession(sessionId)).thenReturn(Some(session))
-      when(repo.addVote(sessionId, vote)).thenReturn(Voted)
+      val vote = Vote(base.user, answerId)
+      when(repo.addVote(sessionId, vote)).thenReturn(VoteResult.Voted)
       val bot = botUnderTest(repo)
 
       matrix(bot) { entry =>
         entry ! Command("vote", List(sessionId.toString, answerId.toString), base)
-//        val partsArray = Array("q1 q2?", " a1", " a2 a2", " a3")
         theProbe.expectMsg(1 second, OutboundMessage(base.channel, VotingBot.formatVoteMessage(sessionId, base.user, answerId)))
+
+        verify(repo).addVote(sessionId, vote)
+      }
+    }
+
+    "disallow voting on not existing answers" in {
+      val repo = mock[VotingRepo]
+
+      val sessionId = 670
+      val answerId = 0
+      val vote = Vote(base.user, answerId)
+      when(repo.addVote(sessionId, vote)).thenReturn(VoteResult.NoAnswer)
+      val bot = botUnderTest(repo)
+
+      matrix(bot) { entry =>
+        entry ! Command("vote", List(sessionId.toString, answerId.toString), base)
+        theProbe.expectMsg(1 second, OutboundMessage(base.channel, VotingBot.formatNoAnswerMessage(sessionId, base.user, answerId)))
+
+        verify(repo).addVote(sessionId, vote)
+      }
+    }
+
+    "disallow voting in closed sessions" in {
+      val repo = mock[VotingRepo]
+
+      val sessionId = 808
+      val answerId = 0
+      val vote = Vote(base.user, answerId)
+      when(repo.addVote(sessionId, vote)).thenReturn(VoteResult.SessionClosed)
+      val bot = botUnderTest(repo)
+
+      matrix(bot) { entry =>
+        entry ! Command("vote", List(sessionId.toString, answerId.toString), base)
+        theProbe.expectMsg(1 second, OutboundMessage(base.channel, VotingBot.formatSessionClosedMessage(sessionId, base.user)))
+
+        verify(repo).addVote(sessionId, vote)
+      }
+    }
+
+    "disallow voting when session is missing" in {
+      val repo = mock[VotingRepo]
+
+      val sessionId = 460
+      val answerId = 0
+      val vote = Vote(base.user, answerId)
+      when(repo.addVote(sessionId, vote)).thenReturn(VoteResult.NoSession)
+      val bot = botUnderTest(repo)
+
+      matrix(bot) { entry =>
+        entry ! Command("vote", List(sessionId.toString, answerId.toString), base)
+        theProbe.expectMsg(1 second, OutboundMessage(base.channel, VotingBot.formatNoSessionMessage(sessionId, base.user)))
 
         verify(repo).addVote(sessionId, vote)
       }
