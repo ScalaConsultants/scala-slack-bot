@@ -1,5 +1,6 @@
 # scala-slack-bot
 
+[![Codacy Badge](https://www.codacy.com/project/badge/8c812da768704a68a61e9493cd4de683)](https://www.codacy.com/app/pjazdzewski1990/scala-slack-bot)
 
 Copy `application.conf` as `secret.conf` and fill the gaps.
 
