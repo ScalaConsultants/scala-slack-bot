@@ -24,23 +24,24 @@ class InMemoryVotingRepo extends VotingRepo {
   var globalVotingId = 0L
   val sessionStorage = mutable.Map[Long, Session]()
 
-  override def findSession(sessionId: Long): Option[Session] = {
+  override def findSession(sessionId: Long): Option[Session] =
     sessionStorage.get(sessionId)
-  }
 
-  override def addVote(sessionId: Long, vote: Vote): VoteResult.Value = {
+  override def addVote(sessionId: Long, vote: Vote): VoteResult.Value =
     findSession(sessionId) match {
       case Some(session) if !session.topic.isOpened =>
         SessionClosed
-      case Some(session) if session.topic.answers.length > vote.answer =>
+      case Some(session) if !legalVote(vote, session) =>
         NoAnswer
-      case Some(session) =>
+      case Some(session) if legalVote(vote, session)=>
         sessionStorage += (sessionId.toLong -> Session(session.topic, vote :: session.votes))
         Voted
       case _ =>
         NoSession
     }
-  }
+
+  def legalVote(vote: Vote, session: Session): Boolean =
+    session.topic.answers.length > vote.answer
 
   override def closeSession(sessionId: Long, session: Session): Long = {
     sessionStorage += (sessionId -> Session(session.topic.copy(isOpened = false), session.votes))

@@ -59,7 +59,7 @@ class VotingBotTest(_system: ActorSystem) extends TestKit(_system) with BotTest 
       val repo = mock[VotingRepo]
 
       val sessionId = 670
-      val answerId = 0
+      val answerId = 101
       val vote = Vote(base.user, answerId)
       when(repo.addVote(sessionId, vote)).thenReturn(VoteResult.NoAnswer)
       val bot = botUnderTest(repo)

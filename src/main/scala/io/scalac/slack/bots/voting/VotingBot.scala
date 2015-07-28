@@ -20,7 +20,7 @@ class VotingBot(repo: VotingRepo, override val bus: MessageEventBus) extends Abs
   ///TODO: add commands for displaying current session details (votes, question, options)
   
   override def act: Receive = {
-    case Command("vote-open", words, message) if words.length > 1 =>
+    case Command("vote-open", words, message) if words.length >= 1 =>
       val parts =  words.mkString(" ").split(";")
       val sessionId = repo.createSession(parts.head, parts.tail)
 
@@ -80,19 +80,15 @@ object VotingBot extends MessageFormatter {
       s"A: ${parts.tail.mkString(EOL)}"
   }
 
-  def formatVoteMessage(sessionId: Long, user: String, answerId: Int): String = {
-    s"${user}: Vote in $sessionId for $answerId has been taken"
-  }
+  def formatVoteMessage(sessionId: Long, user: String, answerId: Int): String =
+    s"$user: Vote in $sessionId for $answerId has been taken"
 
-  def formatSessionClosedMessage(sessionId: Long, user: String): String = {
-    s"${user}: Session $sessionId has been closed"
-  }
+  def formatSessionClosedMessage(sessionId: Long, user: String): String =
+    s"$user: Session $sessionId has been closed"
 
-  def formatNoAnswerMessage(sessionId: Long, user: String, answerId: Int): String = {
-    s"${user}: Session $sessionId has no answer $answerId"
-  }
+  def formatNoAnswerMessage(sessionId: Long, user: String, answerId: Int): String =
+    s"$user: Session $sessionId has no answer $answerId"
 
-  def formatNoSessionMessage(sessionId: Long, user: String): String = {
-    s"${user}: No session with this Id: $sessionId"
-  }
+  def formatNoSessionMessage(sessionId: Long, user: String): String =
+    s"$user: No session with this Id: $sessionId"
 }
