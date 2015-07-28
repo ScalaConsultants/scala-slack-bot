@@ -30,6 +30,8 @@ trait BotTest extends ImplicitSender with WordSpecLike with BeforeAndAfterAll wi
     eventBus.subscribe(echo, Incoming)
     eventBus.subscribe(echo, Outgoing)
     f(entry)
+    eventBus.unsubscribe(echo, Incoming)
+    eventBus.unsubscribe(echo, Outgoing)
   }
 
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
